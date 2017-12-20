@@ -1,7 +1,10 @@
-package com.cpuheater.deepdive.models
+package com.cpuheater.deepdive.nn.models
 
-import com.cpuheater.deepdive.core.FeedForwardNetwork
-import com.cpuheater.deepdive.layers.Layer
+import com.cpuheater.deepdive.nn.core.FeedForwardNetwork
+import com.cpuheater.deepdive.nn.layers.Layer
+import com.cpuheater.deepdive.lossfunctions.LossFunction
+import com.cpuheater.deepdive.nn.core.FeedForwardNetwork
+import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.DataSet

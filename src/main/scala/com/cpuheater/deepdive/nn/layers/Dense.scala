@@ -1,7 +1,8 @@
-package com.cpuheater.deepdive.layers
+package com.cpuheater.deepdive.nn.layers
 
-import com.cpuheater.deepdive.core.Activation
+import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.lossfunctions.LossFunction
+import com.cpuheater.deepdive.nn.core.Activation
 
 class Dense(override val nbOutput: Int,
             override val nbInput: Int,

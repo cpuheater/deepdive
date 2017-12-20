@@ -1,6 +1,8 @@
-package com.cpuheater.deepdive.core
+package com.cpuheater.deepdive.nn.core
 
-import com.cpuheater.deepdive.layers.Layer
+import com.cpuheater.deepdive.nn.layers.Layer
+import com.cpuheater.deepdive.lossfunctions.LossFunction
+import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
 import org.deeplearning4j.optimize.api.IterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -140,7 +142,6 @@ class FeedForwardNetwork(layers: List[Layer], lossFn: LossFunction)  {
     }
     if(iterator.resetSupported())
       iterator.reset()
-
   }
 
 

@@ -1,9 +1,11 @@
-package com.cpuheater.deepdive.core
+package com.cpuheater.deepdive.nn.core
 
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.api.ops.impl.transforms.RectifedLinear
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
+import org.nd4j.linalg.ops.transforms.Transforms
 import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
 
@@ -19,7 +21,7 @@ trait Activation extends Function1[INDArray, INDArray] {
 }
 
 
-object Activation  {
+object Activation {
 
   object Sigmoid extends Activation {
 
@@ -36,6 +38,14 @@ object Activation  {
     def derivative(x: INDArray): INDArray = {
       Nd4j.zerosLike(x)
     }
+  }
+
+
+  object Relu extends Activation {
+    def apply(a: INDArray): INDArray = Transforms.relu(a)
+
+    def derivative(x: INDArray): INDArray =
+      Nd4j.getExecutioner.execAndReturn(new RectifedLinear(x).derivative)
   }
 
 }

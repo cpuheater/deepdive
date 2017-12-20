@@ -1,19 +1,19 @@
 package com.cpuheater.deepdive.nn
 
-import com.cpuheater.deepdive.core.Activation
-import com.cpuheater.deepdive.layers.Dense
-import com.cpuheater.deepdive.models.Sequential
+import com.cpuheater.deepdive.lossfunctions.{CrossEntropyLoss, MSELoss}
+import com.cpuheater.deepdive.nn.core.Activation
+import com.cpuheater.deepdive.nn.layers.Dense
+import com.cpuheater.deepdive.nn.models.Sequential
 import com.cpuheater.deepdive.util.TestSupport
 import org.datavec.api.records.reader.impl.csv.CSVRecordReader
 import org.datavec.api.split.FileSplit
 import org.datavec.api.util.ClassPathResource
+import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.dataset.{DataSet, SplitTestAndTrain}
+import org.nd4j.linalg.dataset.DataSet
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4s.Implicits._
-import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import com.cpuheater.deepdive.lossfunctions.{CrossEntropy, MSE}
 
 
 class NNSpec extends TestSupport {
@@ -41,7 +41,7 @@ class NNSpec extends TestSupport {
 
     val dataSet = new DataSet(features, labels)
 
-    network.compile(CrossEntropy)
+    network.compile(CrossEntropyLoss)
     network.fit(dataSet, nbOfEpoch, batchSize, learningRate)
 
     val correct = (0 until nbOfExamples).foldLeft(0){
@@ -84,7 +84,7 @@ class NNSpec extends TestSupport {
 
     val dataSet = new DataSet(features, labels)
 
-    network.compile(CrossEntropy)
+    network.compile(CrossEntropyLoss)
     network.fit(dataSet, nbOfEpoch, batchSize, learningRate)
 
     val correct = (0 until nbOfExamples).foldLeft(0){
@@ -131,7 +131,7 @@ class NNSpec extends TestSupport {
 
     network.add(Dense(nbOutput = 25, nbInput = 400, activation = Activation.Sigmoid))
     network.add(Dense(nbInput = 25, nbOutput = 10, activation = Activation.Sigmoid))
-    network.compile(MSE)
+    network.compile(MSELoss)
 
 
     (0 until nbOfEpoch).map{

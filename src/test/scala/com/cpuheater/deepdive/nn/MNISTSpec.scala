@@ -1,26 +1,14 @@
 package com.cpuheater.deepdive.nn
 
-import com.cpuheater.deepdive.core.Activation
-import com.cpuheater.deepdive.layers.Dense
-import com.cpuheater.deepdive.models.Sequential
+import com.cpuheater.deepdive.lossfunctions.{CrossEntropyLoss, MSELoss}
+import com.cpuheater.deepdive.nn.core.Activation
+import com.cpuheater.deepdive.nn.core.Activation.Sigmoid
+import com.cpuheater.deepdive.nn.layers.Dense
+import com.cpuheater.deepdive.nn.models.Sequential
 import com.cpuheater.deepdive.util.TestSupport
-import org.datavec.api.records.reader.RecordReader
-import org.datavec.api.records.reader.impl.collection.CollectionRecordReader
-import org.datavec.api.records.reader.impl.csv.CSVRecordReader
-import org.datavec.api.split.FileSplit
-import org.datavec.api.util.ClassPathResource
-import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator
-import org.deeplearning4j.nn.conf.layers.FeedForwardLayer
-import org.deeplearning4j.nn.weights.WeightInit
-import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.dataset.{DataSet, SplitTestAndTrain}
 import org.nd4j.linalg.factory.Nd4j
-import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
-import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import com.cpuheater.deepdive.lossfunctions.{CrossEntropy, MSE}
 
 
 
@@ -44,10 +32,10 @@ class MNISTSpec extends TestSupport {
 
     val network = Sequential()
 
-    network.add(Dense(nbOutput = hidden, nbInput = input, activation = Activation.Sigmoid))
+    network.add(Dense(nbOutput = hidden, nbInput = input, activation = Sigmoid))
     network.add(Dense(nbInput = hidden, nbOutput = output, activation = Activation.Sigmoid))
 
-    network.compile(CrossEntropy)
+    network.compile(CrossEntropyLoss)
 
     (0 until nbOfEpoch).map{
       index =>
@@ -97,7 +85,7 @@ class MNISTSpec extends TestSupport {
     network.add(Dense(nbOutput = hidden, nbInput = input, activation = Activation.Sigmoid))
     network.add(Dense(nbInput = hidden, nbOutput = output, activation = Activation.Sigmoid))
 
-    network.compile(MSE)
+    network.compile(MSELoss)
 
     (0 until nbOfEpoch).map{
       index =>
