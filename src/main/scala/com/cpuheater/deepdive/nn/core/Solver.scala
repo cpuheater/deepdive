@@ -28,7 +28,8 @@ class Solver(model: MultiLayerNetwork) {
   def step(dataSet: DataSet) = {
     val x = dataSet.getFeatures
     val y = dataSet.getLabels
-    model.loss(x, y)
+    val (loss, grads) = model.loss(x, y)
+    println(grads)
 
   }
 
