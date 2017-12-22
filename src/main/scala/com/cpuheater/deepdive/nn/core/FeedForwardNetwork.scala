@@ -4,6 +4,7 @@ import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
 import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
+import com.cpuheater.deepdive.nn.LayerConfig
 import org.deeplearning4j.optimize.api.IterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.DataSet
@@ -19,7 +20,7 @@ import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
 
-class FeedForwardNetwork(layers: List[Layer], lossFn: LossFunction)  {
+class FeedForwardNetwork(layers: List[LayerConfig], lossFn: LossFunction)  {
 
 
   private val log: Logger = LoggerFactory.getLogger(this.getClass)
@@ -55,15 +56,15 @@ class FeedForwardNetwork(layers: List[Layer], lossFn: LossFunction)  {
     val (_, activations) =  feedForward(feature)
 
 
-    val deltaTMP = (activations.last - label) *  layers.last.activationFn.derivative(activations.last)
-    val delta = lossFn.computeGradient(label, activations.last, layers.last.activationFn)
+    val deltaTMP = (activations.last - label) *  layers.last.activation.derivative(activations.last)
+    val delta = lossFn.computeGradient(label, activations.last, layers.last.activation)
 
     biasesGrad.update(numLayers-1, delta)
     weightsGrad.update(numLayers-1, delta.dot(activations.reverse.tail.head.T))
 
     (numLayers-1 until  0 by -1).foldLeft(delta){
       case (delta, l) =>
-        val newDelta = weights(l).T.dot(delta) * layers(l).activationFn.derivative(activations(l))
+        val newDelta = weights(l).T.dot(delta) * layers(l).activation.derivative(activations(l))
         weightsGrad(l-1) =  newDelta.dot(activations(l-1).T)
         biasesGrad(l-1) = newDelta
         newDelta
@@ -94,7 +95,6 @@ class FeedForwardNetwork(layers: List[Layer], lossFn: LossFunction)  {
     }
     weights = weights.zip(totalWeightsGrad).map{
       case (weight, weightGrad) =>
-        val dupa = weightGrad * (alpha/miniBatchSize)
         weight - weightGrad * (alpha/miniBatchSize)
     }
     biases = biases.zip(totalBiasesGrad).map{

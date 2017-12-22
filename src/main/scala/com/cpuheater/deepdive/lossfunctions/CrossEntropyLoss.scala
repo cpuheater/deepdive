@@ -1,5 +1,6 @@
 package com.cpuheater.deepdive.lossfunctions
 
+import com.cpuheater.deepdive.activations.ActivationFn
 import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.layers.Layer
@@ -20,14 +21,14 @@ import org.nd4s.Implicits._
 
 object CrossEntropyLoss extends LossFunction {
 
-  def computeScore(label: INDArray, output: INDArray) : Float = {
+  def computeScoreAndGradient(label: INDArray, output: INDArray) : Float = {
     val term1 = log(output).mul(-label)
     val term2 = log(output.rsub(1)).mul(label.rsub(1))
     Nd4j.clearNans(term2)
     term1.sub(term2).sumNumber().floatValue()
   }
 
-  def computeGradient(label: INDArray, output: INDArray, activationFn: Activation): INDArray =  {
+  def computeGradient(label: INDArray, output: INDArray, activationFn: ActivationFn): INDArray =  {
     val diff = output-label
     diff
   }

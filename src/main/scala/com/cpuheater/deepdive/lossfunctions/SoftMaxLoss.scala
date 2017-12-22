@@ -35,9 +35,9 @@ shifted_logits = x - np.max(x, axis=1, keepdims=True)
  */
 
 
-object SoftMaxLoss {
+object SoftMaxLoss  extends LossFunction2 {
 
-  def computeScore(outputs: INDArray, labels: INDArray) : (Double, INDArray) = {
+  override def computeGradientAndScore(outputs: INDArray, labels: INDArray) : (Double, INDArray) = {
     val nbTrainigExamples = outputs.rows()
     val d = outputs.max(1)
     val outputsMinusMax = outputs.subColumnVector(outputs.max(1))
@@ -45,11 +45,6 @@ object SoftMaxLoss {
     val sum = scores.sum(1).reshape(2, 1)
     val probs = scores.divColumnVector(sum)
     val loss = -(log(probs)*labels).sumNumber().doubleValue()/nbTrainigExamples
-    /**
-      * s = softmax.reshape(-1,1)
-    return np.diagflat(s) - np.dot(s, s.T)
-      */
-
     val grad = (probs - labels)/nbTrainigExamples
     (loss, grad)
 

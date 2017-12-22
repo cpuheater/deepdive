@@ -18,7 +18,7 @@ import org.nd4s.Implicits._
 
 class NNSpec extends TestSupport {
 
-
+/*
   it should "cross entropy 0.9838" in {
 
     val input = 400
@@ -181,6 +181,6 @@ class NNSpec extends TestSupport {
     val labels = Nd4j.create(features.length, 10)
     val labelsNDarray = labelsArray.flatten.zipWithIndex.foreach{ case (value, index) => labels(index, ->) =   oneHotMap.getRow(value.toInt -1)}
     (Nd4j.create(features), labels)
-  }
+  }*/
 
 }

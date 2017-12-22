@@ -1,3 +1,4 @@
+/*
 package com.cpuheater.deepdive.nn.core
 
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -36,10 +37,9 @@ object Activation {
     def apply(a: INDArray): INDArray = a
 
     def derivative(x: INDArray): INDArray = {
-      Nd4j.zerosLike(x)
+      Nd4j.onesLike(x)
     }
   }
-
 
   object Relu extends Activation {
     def apply(a: INDArray): INDArray = Transforms.relu(a)
@@ -53,3 +53,4 @@ object Activation {
 
 
 
+*/

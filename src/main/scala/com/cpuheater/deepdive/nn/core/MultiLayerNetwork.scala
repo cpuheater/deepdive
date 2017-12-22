@@ -1,5 +1,6 @@
 package com.cpuheater.deepdive.nn.core
 
+import com.cpuheater.deepdive.activations.ReLU
 import org.deeplearning4j.optimize.api.IterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.DataSet
@@ -10,7 +11,6 @@ import org.nd4s.Implicits._
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.factory.Nd4j
 import org.slf4j.{Logger, LoggerFactory}
-import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
 import org.nd4j.linalg.indexing.BooleanIndexing
 import org.nd4j.linalg.indexing.conditions.Conditions
@@ -58,7 +58,7 @@ class MultiLayerNetwork(hidden: List[Int], input: Int, numClasses: Int) {
     val b = params(s"b${hidden.length+1}")
     val (preOutput, cx, cw, cb)   = forward(hScore, w, b)
 
-    val (loss, dout) = SoftMaxLoss.computeScore(preOutput, y)
+    val (loss, dout) = SoftMaxLoss.computeGradientAndScore(preOutput, y)
 
     val (dx, dw, db) = backward(dout, cx, cw, cb)
 
@@ -84,6 +84,8 @@ class MultiLayerNetwork(hidden: List[Int], input: Int, numClasses: Int) {
   def reluBackward(dout: INDArray, ca: INDArray, cx: INDArray, cw: INDArray, cb: INDArray) = {
     val caDupl = ca.dup()
     BooleanIndexing.applyWhere(caDupl, Conditions.lessThan(0), 0)
+    val tmp = ReLU.derivative(ca)
+
     val da = caDupl * dout
     val (dx, dw,db) = backward(da, cx, cw, cb)
     (dx, dw,db)
@@ -106,7 +108,7 @@ class MultiLayerNetwork(hidden: List[Int], input: Int, numClasses: Int) {
   def reluForward(x: INDArray, w: INDArray, b: INDArray):
   (INDArray, INDArray, INDArray, INDArray, INDArray) = {
     val (out1, cx, cw, cb) = forward(x, w, b)
-    val out2  = Activation.Relu(out1)
+    val out2  = ReLU(out1)
     (out2, out1, cx, cw, cb)
   }
 

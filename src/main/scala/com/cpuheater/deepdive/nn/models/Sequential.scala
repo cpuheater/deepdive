@@ -6,17 +6,18 @@ import com.cpuheater.deepdive.lossfunctions.LossFunction
 import com.cpuheater.deepdive.nn.core.FeedForwardNetwork
 import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
+import com.cpuheater.deepdive.nn.LayerConfig
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 
 class Sequential {
 
-  private var layers = List[Layer]()
+  private var layers = List[LayerConfig]()
 
   protected var model: FeedForwardNetwork = _
 
-  def add(layer: Layer): Unit = {
+  def add(layer: LayerConfig): Unit = {
     layers = layers :+ layer
   }
 

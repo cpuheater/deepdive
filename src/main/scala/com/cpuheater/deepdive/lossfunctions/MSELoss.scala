@@ -1,5 +1,6 @@
 package com.cpuheater.deepdive.lossfunctions
 
+import com.cpuheater.deepdive.activations.ActivationFn
 import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.layers.Layer
@@ -22,7 +23,7 @@ import scala.collection.JavaConversions._
 
 object MSELoss extends LossFunction{
 
-  def computeScore(label: INDArray, output: INDArray) : Float = {
+  def computeScoreAndGradient(label: INDArray, output: INDArray) : Float = {
     var scoreArr: INDArray = output.rsubi(label)
     scoreArr = scoreArr.muli(scoreArr)
     var score = scoreArr.sumNumber.floatValue()
@@ -30,7 +31,7 @@ object MSELoss extends LossFunction{
     score
   }
 
-  def computeGradient(label: INDArray, output: INDArray, activationFn: Activation): INDArray =  {
+  def computeGradient(label: INDArray, output: INDArray, activationFn: ActivationFn): INDArray =  {
     var diff = (output-label) * activationFn.derivative(output)
     diff
   }
