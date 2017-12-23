@@ -2,7 +2,7 @@ package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.activations.ActivationFn
 
-private trait LayerConfig {
+trait LayerConfig {
 
   def name: String
 

@@ -1,6 +1,6 @@
 package com.cpuheater.deepdive.nn
 
-import com.cpuheater.deepdive.nn.core.{MultiLayerNetwork, Solver}
+import com.cpuheater.deepdive.nn.core.{OldMultiLayerNetwork, OldSolver}
 import com.cpuheater.deepdive.util.TestSupport
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet
@@ -32,8 +32,8 @@ class MultiSpec extends TestSupport {
     val lr = 1e-3
     val batchSize = 2
 
-    val network = new MultiLayerNetwork(List(3, 3), input = 3*3, numClasses = 10)
-    val solver = new Solver(network)
+    val network = new OldMultiLayerNetwork(List(3, 3), input = 3*3, numClasses = 10)
+    val solver = new OldSolver(network)
     solver.train(dataSet, lr, batchSize)
 
 

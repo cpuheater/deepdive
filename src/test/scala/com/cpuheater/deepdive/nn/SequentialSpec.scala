@@ -2,7 +2,7 @@ package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.activations.{Identity, ReLU}
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
-import com.cpuheater.deepdive.nn.core.{MultiLayerNetwork, Solver}
+import com.cpuheater.deepdive.nn.core.{OldMultiLayerNetwork, OldSolver}
 import com.cpuheater.deepdive.util.TestSupport
 import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
@@ -21,12 +21,13 @@ class SequentialSpec extends TestSupport{
     val loss = SoftMaxLoss
     val lr = 1e-3
 
-    val network = Sequential(List(Linear(3, 3, activation = ReLU),
-                                  Linear(3, 3, activation = ReLU),
-                                     Linear(3, 10, activation = Identity)),
-                                     loss, lr, batchSize)
+    val model = Sequential()
+      .add(Linear(3, 3, activation = ReLU))
+        .add(Linear(3, 3, activation = ReLU))
+          .add(Linear(3, 10, activation = Identity))
+      .build(loss, lr, batchSize)
 
-    network.fit(dataSet)
+    model.fit(dataSet)
 
   }
 

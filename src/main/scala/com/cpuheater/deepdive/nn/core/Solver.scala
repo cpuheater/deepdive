@@ -1,49 +1,50 @@
 package com.cpuheater.deepdive.nn.core
 
+import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
+import com.cpuheater.deepdive.nn.layers.CompType
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.deeplearning4j.optimize.api.IterationListener
 import org.nd4j.linalg.dataset.api.DataSet
-import shapeless.HList
-import shapeless.ops.hlist.ToList
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
-import org.nd4j.linalg.factory.Nd4j
-import org.slf4j.{Logger, LoggerFactory}
-
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
-class Solver(model: MultiLayerNetwork) {
+class Solver(model: SequentialModel, config: Config) {
 
-
-  var epoch = 0
-  var best_val_acc = 0
-  var best_params = Map.empty[String, INDArray]
-  var loss_history = List.empty[Double]
-  var train_acc_history = List.empty[Double]
-  var val_acc_history = List.empty[Double]
-
-
-  def step(dataSet: DataSet) = {
-    val x = dataSet.getFeatures
-    val y = dataSet.getLabels
-    val (loss, grads) = model.loss(x, y)
-    println(grads)
-
-  }
-
-  def train(dataSet: DataSet, lrDecay: Double = 1.0, batchSize: Int = 2) = {
-
-    dataSet.batchBy(batchSize).zipWithIndex.map{
+  def fit(dataSet: DataSet): Unit = {
+    dataSet.batchBy(config.batchSize).zipWithIndex.foreach{
       case (batch, index) =>
         println(s"Batch ${index}")
         step(batch)
     }
+  }
 
+  def fit(iterator: DataSetIterator, alpha: Double): Unit = {
+    ???
   }
 
 
+  def predict(x: INDArray) = {
+    model.predict(x)
+  }
 
+
+  private def step(dataSet: DataSet) = {
+    val x = dataSet.getFeatures
+    val y = dataSet.getLabels
+    val (loss, grads) = model.calcGradientAndLoss(x, y)
+    model.layers.zipWithIndex.foreach {
+      case (layer, index) =>
+        layer.params(CompType.W) = layer.params(CompType.W) - grads(s"${CompType.W}${index+1}") * config.lr
+        layer.params(CompType.B) = layer.params(CompType.B) - grads(s"${CompType.B}${index+1}") * config.lr
+    }
+    model.layers.zipWithIndex.foreach {
+      case (layer, index) =>
+        println(layer.params(CompType.W))
+        println(layer.params(CompType.B))
+    }
+
+  }
 
 }

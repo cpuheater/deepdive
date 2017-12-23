@@ -10,7 +10,6 @@ import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.factory.Nd4j
-import org.slf4j.{Logger, LoggerFactory}
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
 import org.nd4j.linalg.indexing.BooleanIndexing
 import org.nd4j.linalg.indexing.conditions.Conditions
@@ -18,7 +17,7 @@ import org.nd4j.linalg.indexing.conditions.Conditions
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
-class MultiLayerNetwork(hidden: List[Int], input: Int, numClasses: Int) {
+class OldMultiLayerNetwork(hidden: List[Int], input: Int, numClasses: Int) {
 
   val numLayers = 1+hidden.length
   var params: Map[String, INDArray] =
