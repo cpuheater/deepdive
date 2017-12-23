@@ -23,7 +23,7 @@ class SequentialModel(val layers: List[Layer]) {
   private val outputLayer = layers.last
 
 
-  private def _forward(x: INDArray): INDArray = {
+  private def forward(x: INDArray): INDArray = {
     val lastHiddenScore = hiddenLayers.foldLeft(x){
       case (score, layer) =>
         val newScore = layer.forward(score)
@@ -33,9 +33,9 @@ class SequentialModel(val layers: List[Layer]) {
     outputLayer.forward(lastHiddenScore)
   }
 
-  def calcGradientAndLoss(x: INDArray, y: INDArray): (Double, Map[String, INDArray]) = {
+  def forwardAndBackwardPass(x: INDArray, y: INDArray): (Double, Map[String, INDArray]) = {
 
-    val preOutput = _forward(x)
+    val preOutput = forward(x)
 
     val (loss, dout) = SoftMaxLoss.computeGradientAndScore(preOutput, y)
 
@@ -58,7 +58,7 @@ class SequentialModel(val layers: List[Layer]) {
 
 
   def predict(x: INDArray): INDArray =  {
-    _forward(x)
+    forward(x)
   }
 
 

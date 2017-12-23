@@ -6,7 +6,7 @@ import org.nd4j.linalg.api.ndarray.INDArray
 
 trait LossFunction {
 
-  def computeScoreAndGradient(label: INDArray, output: INDArray) : Float
+  def computeLossAndGradient(label: INDArray, output: INDArray) : Float
 
 
   def computeGradient(label: INDArray, output: INDArray, activationFn: ActivationFn): INDArray

@@ -23,7 +23,7 @@ import scala.collection.JavaConversions._
 
 object MSELoss extends LossFunction{
 
-  def computeScoreAndGradient(label: INDArray, output: INDArray) : Float = {
+  def computeLossAndGradient(label: INDArray, output: INDArray) : Float = {
     var scoreArr: INDArray = output.rsubi(label)
     scoreArr = scoreArr.muli(scoreArr)
     var score = scoreArr.sumNumber.floatValue()

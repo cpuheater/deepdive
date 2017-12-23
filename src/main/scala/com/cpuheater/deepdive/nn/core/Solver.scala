@@ -33,7 +33,7 @@ class Solver(model: SequentialModel, config: Config) {
   private def step(dataSet: DataSet) = {
     val x = dataSet.getFeatures
     val y = dataSet.getLabels
-    val (loss, grads) = model.calcGradientAndLoss(x, y)
+    val (loss, grads) = model.forwardAndBackwardPass(x, y)
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
         layer.params(CompType.W) = layer.params(CompType.W) - grads(s"${CompType.W}${index+1}") * config.lr
