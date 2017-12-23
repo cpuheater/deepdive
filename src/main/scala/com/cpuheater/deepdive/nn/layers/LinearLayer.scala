@@ -1,6 +1,7 @@
 package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, ReLU}
+import com.cpuheater.deepdive.nn.Linear
 import com.cpuheater.deepdive.nn.layers.CompType.PreOutput
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.indexing.BooleanIndexing
@@ -10,13 +11,20 @@ import org.nd4s.Implicits._
 
 import scala.collection.mutable
 
-class LinearLayer(override val nbOutput: Int,
-                  override val nbInput: Int,
-                  override val activationFn: ActivationFn,
-                  override val name: String,
+class LinearLayer(layerConfig: Linear,
                   override val params: mutable.Map[CompType, INDArray]) extends Layer {
 
   private val cache: mutable.Map[CompType, INDArray] = mutable.Map[CompType, INDArray]()
+
+
+  override def name: String = layerConfig.name
+
+  override def activationFn: ActivationFn = layerConfig.activation
+
+  def nbOutput: Int = layerConfig.nbOutput
+
+  def nbInput: Int = layerConfig.nbInput
+
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
     val w = params(CompType.W)

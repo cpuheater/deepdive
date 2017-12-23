@@ -1,8 +1,6 @@
 package com.cpuheater.deepdive.lossfunctions
 
 import com.cpuheater.deepdive.activations.ActivationFn
-import com.cpuheater.deepdive.nn.core.Activation
-import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.layers.Layer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.deeplearning4j.optimize.api.IterationListener

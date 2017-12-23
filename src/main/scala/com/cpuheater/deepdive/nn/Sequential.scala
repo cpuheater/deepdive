@@ -4,6 +4,7 @@ package com.cpuheater.deepdive.nn
 import com.cpuheater.deepdive.lossfunctions.{LossFunction, LossFunction2, SoftMaxLoss}
 import com.cpuheater.deepdive.nn.layers.{CompType, Layer, LinearLayer}
 import com.cpuheater.deepdive.nn.core.{Config, FeedForwardNetwork, SequentialModel, Solver}
+import com.cpuheater.deepdive.weights.WeightsInitializer
 
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
@@ -14,13 +15,18 @@ import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
 
+import scala.collection.mutable
+
 class Sequential protected (layers: List[LayerConfig] = Nil) {
 
-   def add(layer: LayerConfig)  = new Sequential(layer::layers)
+   def add(layer: LayerConfig)  = new Sequential(layers:+layer)
 
    def build(loss: LossFunction2, lr: Double, batchSize: Int): Solver = {
 
      Nd4j.getRandom().setSeed(1)
+
+
+
 
      val l1 = scala.collection.mutable.Map[CompType, INDArray]()
      l1(CompType.W) = Nd4j.create(Array(0.09700684, -0.01866912, -0.16777732, 0.13514824, 0.04932248, -0.13881888, 0.09700684, -0.01866912, -0.16777732)).reshape(3, 3)
@@ -40,9 +46,15 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
 
 
      val newLayers = layers.zip(List(l1, l2, l3)).map{
-       case (lConfig: Linear, l) =>
-         new LinearLayer(lConfig.nbOutput,
-           lConfig.nbInput, lConfig.activation, lConfig.name, l)
+       case (linear: Linear, l) =>
+
+         val w = WeightsInitializer.initWeights(
+           WeightsInitType.UNIFORM,
+           linear.nbInput,
+           linear.nbOutput)
+         val b = Nd4j.zeros(linear.nbOutput)
+         val params = mutable.Map[CompType, INDArray](CompType.W -> w, CompType.B -> b)
+         new LinearLayer(linear, params)
      }
 
 
