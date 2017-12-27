@@ -12,9 +12,9 @@ import org.nd4s.Implicits._
 import scala.collection.mutable
 
 class LinearLayer(layerConfig: Linear,
-                  override val params: mutable.Map[CompType, INDArray]) extends Layer {
+                  override val params: mutable.Map[String, INDArray], layerNb: Int) extends Layer {
 
-  private val cache: mutable.Map[CompType, INDArray] = mutable.Map[CompType, INDArray]()
+  private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
 
 
   override def name: String = layerConfig.name
@@ -27,20 +27,20 @@ class LinearLayer(layerConfig: Linear,
 
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
-    val w = params(CompType.W)
-    val b = params(CompType.B)
+    val w = params(CompType.print(CompType.W, layerNb))
+    val b = params(CompType.print(CompType.B, layerNb))
     val preOutput = x.reshape(x.shape()(0), -1).dot(w).addRowVector(b)
     val out = activationFn(preOutput)
-    cache(CompType.PreOutput) = preOutput
-    cache(CompType.X) = x
+    cache(CompType.print(CompType.PreOutput, layerNb)) = preOutput
+    cache(CompType.print(CompType.X, layerNb)) = x
     out
   }
 
   override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
-    val preOutput = cache(CompType.PreOutput)
-    val x = cache(CompType.X)
-    val w = params(CompType.W)
-    val b = params(CompType.B)
+    val preOutput = cache(CompType.print(CompType.PreOutput, layerNb))
+    val x = cache(CompType.print(CompType.X, layerNb))
+    val w = params(CompType.print(CompType.W, layerNb))
+    val b = params(CompType.print(CompType.B, layerNb))
 
     val preOutputDupl = activationFn.derivative(preOutput.dup())
     val da = preOutputDupl * dout

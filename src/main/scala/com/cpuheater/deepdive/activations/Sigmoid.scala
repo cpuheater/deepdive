@@ -11,6 +11,6 @@ object Sigmoid extends ActivationFn {
   def apply(a: INDArray): INDArray = sigmoid(a)
 
   def derivative(x: INDArray): INDArray = {
-    x*(x.rsub(1))
+    x*x.rsub(1)
   }
 }

@@ -30,21 +30,23 @@ class Solver(model: SequentialModel, config: Config) {
   }
 
 
-  private def step(dataSet: DataSet) = {
+  private def step(dataSet: DataSet):Unit = {
     val x = dataSet.getFeatures
     val y = dataSet.getLabels
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
-        layer.params(CompType.W) = layer.params(CompType.W) - grads(s"${CompType.W}${index+1}") * config.lr
-        layer.params(CompType.B) = layer.params(CompType.B) - grads(s"${CompType.B}${index+1}") * config.lr
-    }
-    model.layers.zipWithIndex.foreach {
-      case (layer, index) =>
-        println(layer.params(CompType.W))
-        println(layer.params(CompType.B))
+        val wKey = CompType.print(CompType.W, index+1)
+        val bKey = CompType.print(CompType.B, index+1)
+        layer.params(wKey) = layer.params(wKey) - grads(wKey) * config.lr
+        layer.params(bKey) = layer.params(bKey) - grads(bKey) * config.lr
     }
 
+  }
+
+
+  def params(): Map[String, INDArray] = {
+    model.layers.flatMap(_.params).toMap
   }
 
 }

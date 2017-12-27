@@ -9,6 +9,8 @@ package object layers {
     case object B extends CompType
     case object PreOutput extends CompType
     case object X extends CompType
+
+    def print(compType: CompType, index:Int) = s"${compType}$index"
   }
 
 }
