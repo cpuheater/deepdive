@@ -12,17 +12,40 @@ import scala.collection.JavaConversions._
 
 class Solver(model: SequentialModel, config: Config) {
 
-  def fit(dataSet: DataSet): Unit = {
+  def fit(dataSet: DataSet): Unit = doEpoch{
     dataSet.batchBy(config.batchSize).zipWithIndex.foreach{
       case (batch, index) =>
         println(s"Batch ${index}")
-        step(batch)
+        val x = batch.getFeatures
+        val y = batch.getLabels
+        step(x, y)
     }
   }
 
-  def fit(iterator: DataSetIterator, alpha: Double): Unit = {
-    ???
+
+  def fit(iterator: DataSetIterator): Unit = doEpoch{
+      var continue = iterator.hasNext
+      while(continue){
+        val next = iterator.next()
+        if(next.getFeatures == null ||  next.getLabels == null) {
+          continue = false
+        } else {
+          step(next.getFeatures, next.getLabels)
+          continue = iterator.hasNext
+        }
+
+      }
+      if(iterator.resetSupported())
+        iterator.reset()
   }
+
+
+  private def doEpoch[T](f : => Unit) =
+    for(i <- 1 to config.numOfEpoch){
+       println(s"Epoch ${i}")
+       f
+    }
+
 
 
   def predict(x: INDArray) = {
@@ -30,9 +53,7 @@ class Solver(model: SequentialModel, config: Config) {
   }
 
 
-  private def step(dataSet: DataSet):Unit = {
-    val x = dataSet.getFeatures
-    val y = dataSet.getLabels
+  private def step(x: INDArray, y: INDArray):Unit = {
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>

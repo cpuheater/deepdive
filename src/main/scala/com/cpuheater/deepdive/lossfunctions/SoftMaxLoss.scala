@@ -1,6 +1,5 @@
 package com.cpuheater.deepdive.lossfunctions
 
-import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.layers.Layer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.deeplearning4j.optimize.api.IterationListener
@@ -42,7 +41,7 @@ object SoftMaxLoss  extends LossFunction2 {
     val d = outputs.max(1)
     val outputsMinusMax = outputs.subColumnVector(outputs.max(1))
     val scores = exp(outputsMinusMax)
-    val sum = scores.sum(1).reshape(2, 1)
+    val sum = scores.sum(1).reshape(nbTrainigExamples, 1)
     val probs = scores.divColumnVector(sum)
     val loss = -(log(probs)*labels).sumNumber().doubleValue()/nbTrainigExamples
     val grad = (probs - labels)/nbTrainigExamples

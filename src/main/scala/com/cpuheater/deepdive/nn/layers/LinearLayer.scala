@@ -46,7 +46,7 @@ class LinearLayer(layerConfig: Linear,
     val da = preOutputDupl * dout
 
     val dx = da.dot(w.T).reshape(x.shape(): _*)
-    val dw = x.reshape(x.rows(), -1).T.dot(da)
+    val dw = x.reshape(x.shape()(0), -1).T.dot(da)
     val db = da.sum(0)
     (dx, dw, db)
 

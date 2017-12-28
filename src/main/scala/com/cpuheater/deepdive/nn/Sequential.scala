@@ -20,7 +20,10 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
 
    def add(layer: LayerConfig)  = new Sequential(layers:+layer)
 
-   def build(loss: LossFunction2, lr: Double, batchSize: Int, seed: Option[Int] = None) : Solver = {
+   def build(loss: LossFunction2,
+             lr: Double,
+             batchSize: Int,
+             seed: Option[Int] = None, numOfEpoch:Int = 2) : Solver = {
 
      seed.foreach(Nd4j.getRandom.setSeed)
 
@@ -38,7 +41,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
 
 
      val model = new SequentialModel(newLayers)
-     val config = Config(layers, loss, lr, batchSize)
+     val config = Config(layers, loss, lr, batchSize, numOfEpoch = numOfEpoch)
      new Solver(model, config)
    }
 
