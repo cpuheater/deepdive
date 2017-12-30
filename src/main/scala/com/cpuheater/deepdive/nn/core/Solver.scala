@@ -55,6 +55,7 @@ class Solver(model: SequentialModel, config: Config) {
 
   private def step(x: INDArray, y: INDArray):Unit = {
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
+    println(s"loss: $loss")
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
         val wKey = CompType.print(CompType.W, index+1)

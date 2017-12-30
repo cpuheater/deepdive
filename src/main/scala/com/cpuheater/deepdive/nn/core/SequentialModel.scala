@@ -52,7 +52,6 @@ class SequentialModel(val layers: List[Layer]) {
         grads(s"${CompType.B}${index}") = db
         dx
     }
-
     (loss, grads.toMap)
   }
 
