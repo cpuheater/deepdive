@@ -12,7 +12,8 @@ import org.nd4s.Implicits._
 import scala.collection.mutable
 
 class LinearLayer(layerConfig: Linear,
-                  override val params: mutable.Map[String, INDArray], layerNb: Int) extends Layer {
+                  override val params: mutable.Map[String, INDArray],
+                  layerNb: Int) extends Layer {
 
   private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
 

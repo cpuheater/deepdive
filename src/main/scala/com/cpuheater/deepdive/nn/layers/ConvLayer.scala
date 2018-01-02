@@ -4,6 +4,7 @@ import com.cpuheater.deepdive.activations.{ActivationFn, ReLU}
 import com.cpuheater.deepdive.nn.{Conv, Linear}
 import com.cpuheater.deepdive.nn.layers.CompType.PreOutput
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.convolution.Convolution
 import org.nd4j.linalg.indexing.BooleanIndexing
 import org.nd4j.linalg.indexing.conditions.Conditions
 import org.nd4j.linalg.ops.transforms.Transforms._
@@ -19,10 +20,6 @@ class ConvLayer(config: Conv,
   require((config.height + 2 * config.padding - config.filterHeight) % config.stride == 0, "invalid height")
 
 
-
-
-
-
   private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
 
 
@@ -31,13 +28,25 @@ class ConvLayer(config: Conv,
   override def activationFn: ActivationFn = config.activation
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
-    val w = params(CompType.print(CompType.W, layerNb))
-    val b = params(CompType.print(CompType.B, layerNb))
-    val preOutput = x.reshape(x.shape()(0), -1).dot(w).addRowVector(b)
-    val out = activationFn(preOutput)
+    val x2col =  Convolution.im2col(x,
+      config.filterHeight,
+      config.filterWidth,
+      config.stride,
+      config.stride,
+      config.padding,
+      config.padding, true)
+
+    val Array(batchSize, _, _, _) = x.shape()
+    val weightsReshaped = params(CompType.print(CompType.W, layerNb))
+      .reshape(config.nbOfFilters, config.filterWidth * config.filterWidth * config.channels) //.dot(out) + b.reshape(-1, 1)
+    val x2colReshaped = x2col.permute(1,2,3, 4,5, 0).reshape(x2col.size(1) * x2col.size(2)* x2col.size(3), x2col.size(0) * x2col.size(5) * x2col.size(4))
+    val bb = params(CompType.print(CompType.B, layerNb)).reshape(params(CompType.print(CompType.B, layerNb)).columns(), 1).broadcast(Array(params(CompType.print(CompType.B, layerNb)).columns(), x2col.size(0) * x2col.size(5) * x2col.size(4)): _*)
+    val preOutput = weightsReshaped.dot(x2colReshaped) + bb
+
     cache(CompType.print(CompType.PreOutput, layerNb)) = preOutput
     cache(CompType.print(CompType.X, layerNb)) = x
-    out
+
+    preOutput.reshape(config.nbOfFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
   }
 
   override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
