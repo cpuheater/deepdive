@@ -26,7 +26,7 @@ class ConvLayer(config: Conv,
 
   override def name: String = config.name
 
-  override def activationFn: ActivationFn = throw new UnsupportedOperationException()
+  override def activationFn: ActivationFn = config.activation
 
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
@@ -44,12 +44,13 @@ class ConvLayer(config: Conv,
     val x2colReshaped = x2col.permute(1,2,3, 4,5, 0).reshape(x2col.size(1) * x2col.size(2)* x2col.size(3), x2col.size(0) * x2col.size(5) * x2col.size(4))
     val bb = params(ParamType.toString(ParamType.B, layerNb)).reshape(params(ParamType.toString(ParamType.B, layerNb)).columns(), 1).broadcast(Array(params(ParamType.toString(ParamType.B, layerNb)).columns(), x2col.size(0) * x2col.size(5) * x2col.size(4)): _*)
     val preOutput = weightsReshaped.dot(x2colReshaped) + bb
-
-    cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutput
+    val preOutputReshaped = preOutput.reshape(config.nbOfFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
+    cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutputReshaped
     cache(ParamType.toString(ParamType.X, layerNb)) = x
     cache(ParamType.toString(ParamType.X2Cols, layerNb)) = x2colReshaped
 
-    preOutput.reshape(config.nbOfFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
+    val out = activationFn(preOutputReshaped)
+    out
   }
 
   override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
@@ -60,14 +61,18 @@ class ConvLayer(config: Conv,
     val x2cols = cache(ParamType.toString(ParamType.X2Cols, layerNb))
     val Array(batchSize, _, _, _) = x.shape()
 
-    val db = dout.sum(0, 2, 3)
-    val doutReshaped = dout.permute(1,2,3,0)
+
+    val preOutputDupl = activationFn.derivative(preOutput.dup())
+    val da = preOutputDupl * dout
+
+    val db = da.sum(0, 2, 3)
+    val daReshaped = da.permute(1,2,3,0)
       .reshape(config.nbOfFilters, dout.size(0) * dout.size(2) * dout.size(3))
 
-    val dw = doutReshaped.dot(x2cols.T).reshape(w.shape(): _*)
+    val dw = daReshaped.dot(x2cols.T).reshape(w.shape(): _*)
 
     val dx2d = w
-      .reshape(w.size(0),  w.size(1) * w.size(2) * w.size(3)).T.dot(doutReshaped)
+      .reshape(w.size(0),  w.size(1) * w.size(2) * w.size(3)).T.dot(daReshaped)
 
     val dx6d = dx2d.reshape(config.channels,
       config.filterHeight,
