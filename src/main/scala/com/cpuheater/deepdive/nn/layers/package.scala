@@ -11,7 +11,7 @@ package object layers {
     case object X extends ParamType
     case object X2Cols extends ParamType
 
-    def print(paramType: ParamType, index:Int) = s"${paramType}$index"
+    def toString(paramType: ParamType, index:Int) = s"${paramType}$index"
   }
 
 }

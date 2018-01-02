@@ -32,8 +32,8 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
            Array(linearConfig.nbInput,
            linearConfig.nbOutput))
          val b = Nd4j.zeros(linearConfig.nbOutput)
-         val params = mutable.Map[String, INDArray](ParamType.print(ParamType.W, index) -> w,
-           ParamType.print(ParamType.B, index) -> b)
+         val params = mutable.Map[String, INDArray](ParamType.toString(ParamType.W, index) -> w,
+           ParamType.toString(ParamType.B, index) -> b)
          new LinearLayer(linearConfig, params, index)
 
        case (convConfig: Conv, index) =>
@@ -45,8 +45,8 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
              convConfig.filterHeight,
              convConfig.filterWidth))
          val b = Nd4j.zeros(convConfig.nbOfFilters)
-         val params = mutable.Map[String, INDArray](ParamType.print(ParamType.W, index) -> w,
-           ParamType.print(ParamType.B, index) -> b)
+         val params = mutable.Map[String, INDArray](ParamType.toString(ParamType.W, index) -> w,
+           ParamType.toString(ParamType.B, index) -> b)
 
          new ConvLayer(convConfig, params, index)
 

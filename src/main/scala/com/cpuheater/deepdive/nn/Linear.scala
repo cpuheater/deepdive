@@ -8,7 +8,7 @@ import com.cpuheater.deepdive.nn.LayerConfig
 
 class Linear(val nbOutput: Int,
              val nbInput: Int,
-             override val activation: ActivationFn = Identity,
+             val activation: ActivationFn = Identity,
              override val name: String)
   extends LayerConfig {
 

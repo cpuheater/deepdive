@@ -6,7 +6,4 @@ trait LayerConfig {
 
   def name: String
 
-  def activation: ActivationFn
-
-
 }

@@ -26,7 +26,8 @@ class ConvLayer(config: Conv,
 
   override def name: String = config.name
 
-  override def activationFn: ActivationFn = config.activation
+  override def activationFn: ActivationFn = throw new UnsupportedOperationException()
+
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
     val x2col =  Convolution.im2col(x,
@@ -38,25 +39,25 @@ class ConvLayer(config: Conv,
       config.padding, true)
 
     val Array(batchSize, _, _, _) = x.shape()
-    val weightsReshaped = params(ParamType.print(ParamType.W, layerNb))
+    val weightsReshaped = params(ParamType.toString(ParamType.W, layerNb))
       .reshape(config.nbOfFilters, config.filterWidth * config.filterWidth * config.channels) //.dot(out) + b.reshape(-1, 1)
     val x2colReshaped = x2col.permute(1,2,3, 4,5, 0).reshape(x2col.size(1) * x2col.size(2)* x2col.size(3), x2col.size(0) * x2col.size(5) * x2col.size(4))
-    val bb = params(ParamType.print(ParamType.B, layerNb)).reshape(params(ParamType.print(ParamType.B, layerNb)).columns(), 1).broadcast(Array(params(ParamType.print(ParamType.B, layerNb)).columns(), x2col.size(0) * x2col.size(5) * x2col.size(4)): _*)
+    val bb = params(ParamType.toString(ParamType.B, layerNb)).reshape(params(ParamType.toString(ParamType.B, layerNb)).columns(), 1).broadcast(Array(params(ParamType.toString(ParamType.B, layerNb)).columns(), x2col.size(0) * x2col.size(5) * x2col.size(4)): _*)
     val preOutput = weightsReshaped.dot(x2colReshaped) + bb
 
-    cache(ParamType.print(ParamType.PreOutput, layerNb)) = preOutput
-    cache(ParamType.print(ParamType.X, layerNb)) = x
-    cache(ParamType.print(ParamType.X2Cols, layerNb)) = x2colReshaped
+    cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutput
+    cache(ParamType.toString(ParamType.X, layerNb)) = x
+    cache(ParamType.toString(ParamType.X2Cols, layerNb)) = x2colReshaped
 
     preOutput.reshape(config.nbOfFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
   }
 
   override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
-    val preOutput = cache(ParamType.print(ParamType.PreOutput, layerNb))
-    val x = cache(ParamType.print(ParamType.X, layerNb))
-    val w = params(ParamType.print(ParamType.W, layerNb))
-    val b = params(ParamType.print(ParamType.B, layerNb))
-    val x2cols = cache(ParamType.print(ParamType.X2Cols, layerNb))
+    val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
+    val x = cache(ParamType.toString(ParamType.X, layerNb))
+    val w = params(ParamType.toString(ParamType.W, layerNb))
+    val b = params(ParamType.toString(ParamType.B, layerNb))
+    val x2cols = cache(ParamType.toString(ParamType.X2Cols, layerNb))
     val Array(batchSize, _, _, _) = x.shape()
 
     val db = dout.sum(0, 2, 3)

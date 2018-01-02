@@ -28,20 +28,20 @@ class LinearLayer(layerConfig: Linear,
 
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
-    val w = params(ParamType.print(ParamType.W, layerNb))
-    val b = params(ParamType.print(ParamType.B, layerNb))
+    val w = params(ParamType.toString(ParamType.W, layerNb))
+    val b = params(ParamType.toString(ParamType.B, layerNb))
     val preOutput = x.reshape(x.shape()(0), -1).dot(w).addRowVector(b)
     val out = activationFn(preOutput)
-    cache(ParamType.print(ParamType.PreOutput, layerNb)) = preOutput
-    cache(ParamType.print(ParamType.X, layerNb)) = x
+    cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutput
+    cache(ParamType.toString(ParamType.X, layerNb)) = x
     out
   }
 
   override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
-    val preOutput = cache(ParamType.print(ParamType.PreOutput, layerNb))
-    val x = cache(ParamType.print(ParamType.X, layerNb))
-    val w = params(ParamType.print(ParamType.W, layerNb))
-    val b = params(ParamType.print(ParamType.B, layerNb))
+    val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
+    val x = cache(ParamType.toString(ParamType.X, layerNb))
+    val w = params(ParamType.toString(ParamType.W, layerNb))
+    val b = params(ParamType.toString(ParamType.B, layerNb))
 
     val preOutputDupl = activationFn.derivative(preOutput.dup())
     val da = preOutputDupl * dout

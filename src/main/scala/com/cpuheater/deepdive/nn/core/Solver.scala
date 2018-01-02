@@ -58,8 +58,8 @@ class Solver(model: SequentialModel, config: Config) {
     println(s"loss: $loss")
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
-        val wKey = ParamType.print(ParamType.W, index+1)
-        val bKey = ParamType.print(ParamType.B, index+1)
+        val wKey = ParamType.toString(ParamType.W, index+1)
+        val bKey = ParamType.toString(ParamType.B, index+1)
         layer.params(wKey) = layer.params(wKey) - grads(wKey) * config.lr
         layer.params(bKey) = layer.params(bKey) - grads(bKey) * config.lr
     }

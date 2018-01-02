@@ -6,7 +6,7 @@ import com.cpuheater.deepdive.nn.LayerConfig
 
 class Dense(val nbOutput: Int,
             val nbInput: Int,
-            override val activation: ActivationFn,
+            val activation: ActivationFn,
             override val name: String)
   extends LayerConfig {
 

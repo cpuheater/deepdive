@@ -11,7 +11,7 @@ case class Conv(height:Int,
                 filterWidth: Int,
                 stride: Int,
                 padding: Int,
-                override val activation: ActivationFn = Identity,
+                val activation: ActivationFn = Identity,
                 override val name: String)
   extends LayerConfig {
 
