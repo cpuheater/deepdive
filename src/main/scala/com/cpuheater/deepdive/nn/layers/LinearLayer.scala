@@ -2,7 +2,7 @@ package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, ReLU}
 import com.cpuheater.deepdive.nn.Linear
-import com.cpuheater.deepdive.nn.layers.CompType.PreOutput
+import com.cpuheater.deepdive.nn.layers.ParamType.PreOutput
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.indexing.BooleanIndexing
 import org.nd4j.linalg.indexing.conditions.Conditions
@@ -28,20 +28,20 @@ class LinearLayer(layerConfig: Linear,
 
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
-    val w = params(CompType.print(CompType.W, layerNb))
-    val b = params(CompType.print(CompType.B, layerNb))
+    val w = params(ParamType.print(ParamType.W, layerNb))
+    val b = params(ParamType.print(ParamType.B, layerNb))
     val preOutput = x.reshape(x.shape()(0), -1).dot(w).addRowVector(b)
     val out = activationFn(preOutput)
-    cache(CompType.print(CompType.PreOutput, layerNb)) = preOutput
-    cache(CompType.print(CompType.X, layerNb)) = x
+    cache(ParamType.print(ParamType.PreOutput, layerNb)) = preOutput
+    cache(ParamType.print(ParamType.X, layerNb)) = x
     out
   }
 
   override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
-    val preOutput = cache(CompType.print(CompType.PreOutput, layerNb))
-    val x = cache(CompType.print(CompType.X, layerNb))
-    val w = params(CompType.print(CompType.W, layerNb))
-    val b = params(CompType.print(CompType.B, layerNb))
+    val preOutput = cache(ParamType.print(ParamType.PreOutput, layerNb))
+    val x = cache(ParamType.print(ParamType.X, layerNb))
+    val w = params(ParamType.print(ParamType.W, layerNb))
+    val b = params(ParamType.print(ParamType.B, layerNb))
 
     val preOutputDupl = activationFn.derivative(preOutput.dup())
     val da = preOutputDupl * dout

@@ -2,7 +2,7 @@ package com.cpuheater.deepdive.nn
 
 
 import com.cpuheater.deepdive.lossfunctions.LossFunction2
-import com.cpuheater.deepdive.nn.layers.{CompType, ConvLayer, LinearLayer}
+import com.cpuheater.deepdive.nn.layers.{ParamType, ConvLayer, LinearLayer}
 import com.cpuheater.deepdive.nn.core.{Config, SequentialModel, Solver}
 import com.cpuheater.deepdive.weights.WeightsInitializer
 import scala.collection.JavaConverters._
@@ -32,8 +32,8 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
            Array(linearConfig.nbInput,
            linearConfig.nbOutput))
          val b = Nd4j.zeros(linearConfig.nbOutput)
-         val params = mutable.Map[String, INDArray](CompType.print(CompType.W, index) -> w,
-           CompType.print(CompType.B, index) -> b)
+         val params = mutable.Map[String, INDArray](ParamType.print(ParamType.W, index) -> w,
+           ParamType.print(ParamType.B, index) -> b)
          new LinearLayer(linearConfig, params, index)
 
        case (convConfig: Conv, index) =>
@@ -45,8 +45,8 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
              convConfig.filterHeight,
              convConfig.filterWidth))
          val b = Nd4j.zeros(convConfig.nbOfFilters)
-         val params = mutable.Map[String, INDArray](CompType.print(CompType.W, index) -> w,
-           CompType.print(CompType.B, index) -> b)
+         val params = mutable.Map[String, INDArray](ParamType.print(ParamType.W, index) -> w,
+           ParamType.print(ParamType.B, index) -> b)
 
          new ConvLayer(convConfig, params, index)
 

@@ -2,15 +2,16 @@ package com.cpuheater.deepdive.nn
 
 package object layers {
 
-  trait CompType
+  trait ParamType
 
-  object CompType {
-    case object W extends CompType
-    case object B extends CompType
-    case object PreOutput extends CompType
-    case object X extends CompType
+  object ParamType {
+    case object W extends ParamType
+    case object B extends ParamType
+    case object PreOutput extends ParamType
+    case object X extends ParamType
+    case object X2Cols extends ParamType
 
-    def print(compType: CompType, index:Int) = s"${compType}$index"
+    def print(paramType: ParamType, index:Int) = s"${paramType}$index"
   }
 
 }

@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
-import com.cpuheater.deepdive.nn.layers.CompType
+import com.cpuheater.deepdive.nn.layers.ParamType
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
@@ -58,8 +58,8 @@ class Solver(model: SequentialModel, config: Config) {
     println(s"loss: $loss")
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
-        val wKey = CompType.print(CompType.W, index+1)
-        val bKey = CompType.print(CompType.B, index+1)
+        val wKey = ParamType.print(ParamType.W, index+1)
+        val bKey = ParamType.print(ParamType.B, index+1)
         layer.params(wKey) = layer.params(wKey) - grads(wKey) * config.lr
         layer.params(bKey) = layer.params(bKey) - grads(bKey) * config.lr
     }
