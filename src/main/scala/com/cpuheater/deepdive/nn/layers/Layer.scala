@@ -9,10 +9,6 @@ trait Layer {
 
   def name: String
 
-  def nbOutput: Int
-
-  def nbInput: Int
-
   def activationFn: ActivationFn
 
   def forward(x: INDArray, isTraining: Boolean=true): INDArray
@@ -20,8 +16,6 @@ trait Layer {
   def backward(x: INDArray, isTraining: Boolean=true): (INDArray, INDArray, INDArray)
 
   def params: mutable.Map[String, INDArray]
-
-  override def toString(): String = s"number of input = ${nbInput} number of output = ${nbOutput}"
 
 }
 

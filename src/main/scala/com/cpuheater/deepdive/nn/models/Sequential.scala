@@ -22,7 +22,7 @@ class Sequential {
   }
 
   def compile(lossFn: LossFunction/*optimizer: Optimizer*/): Unit = {
-    model = new FeedForwardNetwork(layers, lossFn)
+    model = ??? //new FeedForwardNetwork(layers, lossFn)
   }
 
   def fit(dataSet: DataSet, nbEpoch: Int, batchSize: Int, alpha: Double): Unit = {

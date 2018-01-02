@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, ReLU}
-import com.cpuheater.deepdive.nn.Linear
+import com.cpuheater.deepdive.nn.{Conv, Linear}
 import com.cpuheater.deepdive.nn.layers.CompType.PreOutput
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.indexing.BooleanIndexing
@@ -11,20 +11,24 @@ import org.nd4s.Implicits._
 
 import scala.collection.mutable
 
-class LinearLayer(layerConfig: Linear,
-                  override val params: mutable.Map[String, INDArray], layerNb: Int) extends Layer {
+class ConvLayer(config: Conv,
+                override val params: mutable.Map[String, INDArray], layerNb: Int) extends Layer {
+
+
+  require((config.width + 2 * config.padding - config.filterWidth) % config.stride == 0, "Invalid weidth")
+  require((config.height + 2 * config.padding - config.filterHeight) % config.stride == 0, "invalid height")
+
+
+
+
+
 
   private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
 
 
-  override def name: String = layerConfig.name
+  override def name: String = config.name
 
-  override def activationFn: ActivationFn = layerConfig.activation
-
-  def nbOutput: Int = layerConfig.nbOutput
-
-  def nbInput: Int = layerConfig.nbInput
-
+  override def activationFn: ActivationFn = config.activation
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
     val w = params(CompType.print(CompType.W, layerNb))
@@ -49,10 +53,7 @@ class LinearLayer(layerConfig: Linear,
     val dw = x.reshape(x.shape()(0), -1).T.dot(da)
     val db = da.sum(0)
     (dx, dw, db)
-
   }
-
-  override def toString(): String = s"number of input = ${nbInput} number of output = ${nbOutput}"
 
 
 }

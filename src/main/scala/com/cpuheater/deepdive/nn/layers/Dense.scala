@@ -4,8 +4,8 @@ import com.cpuheater.deepdive.activations.{ActivationFn, Identity}
 import com.cpuheater.deepdive.lossfunctions.LossFunction
 import com.cpuheater.deepdive.nn.LayerConfig
 
-class Dense(override val nbOutput: Int,
-            override val nbInput: Int,
+class Dense(val nbOutput: Int,
+            val nbInput: Int,
             override val activation: ActivationFn,
             override val name: String)
   extends LayerConfig {

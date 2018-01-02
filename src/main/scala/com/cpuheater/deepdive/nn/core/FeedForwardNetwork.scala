@@ -4,7 +4,7 @@ import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
 import com.cpuheater.deepdive.nn.layers.Layer
 import com.cpuheater.deepdive.lossfunctions.LossFunction
-import com.cpuheater.deepdive.nn.LayerConfig
+import com.cpuheater.deepdive.nn.{LayerConfig, Linear}
 import org.deeplearning4j.optimize.api.IterationListener
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.api.DataSet
@@ -20,7 +20,7 @@ import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
 
-class FeedForwardNetwork(layers: List[LayerConfig], lossFn: LossFunction)  {
+class FeedForwardNetwork(layers: List[Linear], lossFn: LossFunction)  {
 
 
   private val log: Logger = LoggerFactory.getLogger(this.getClass)
