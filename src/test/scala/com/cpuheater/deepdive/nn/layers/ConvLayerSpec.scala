@@ -45,9 +45,6 @@ class ConvLayerSpec extends TestSupport {
 
     val layerNb = 1
 
-    val outHeight = config.outWidth
-    val outWidth = config.outWidth
-
     val x =  Nd4j.linspace(-0.1, 0.5, 2*3*4*4).reshape(batchSize, channels, height, width)
     val w =  Nd4j.linspace(-0.2, 0.3, 3*3*4*4).reshape(nbOfFilters, channels, filterHeight, filterWidth)
     val b = Nd4j.linspace(-0.1, 0.2, nbOfFilters)

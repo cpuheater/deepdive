@@ -47,7 +47,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, lr, batchSize, seed=Some(1), numOfEpoch = 10)
+      .build(loss, Optimizer.SGD(lr), batchSize, seed=Some(1), numOfEpoch = 10)
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
@@ -99,7 +99,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, lr, batchSize, seed=Some(1), numOfEpoch = 10)
+      .build(loss, Optimizer.SGD(lr), batchSize, seed=Some(1), numOfEpoch = 10)
 
 
     model.fit(new DataSet(features, labels))

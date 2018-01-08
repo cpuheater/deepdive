@@ -2,9 +2,10 @@ package com.cpuheater.deepdive.nn
 
 
 import com.cpuheater.deepdive.lossfunctions.LossFunction2
-import com.cpuheater.deepdive.nn.layers.{ParamType, ConvLayer, LinearLayer}
-import com.cpuheater.deepdive.nn.core.{Config, SequentialModel, Solver}
+import com.cpuheater.deepdive.nn.layers.{ConvLayer, LinearLayer, ParamType}
+import com.cpuheater.deepdive.nn.core.{BuildConfig, SequentialModel, SolverSupport, Solver}
 import com.cpuheater.deepdive.weights.WeightsInitializer
+
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -14,12 +15,12 @@ import org.nd4s.Implicits._
 
 import scala.collection.mutable
 
-class Sequential protected (layers: List[LayerConfig] = Nil) {
+class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSupport {
 
    def add(layer: LayerConfig)  = new Sequential(layers:+layer)
 
    def build(loss: LossFunction2,
-             lr: Double,
+             optimizerConfig: Optimizer = Optimizer.SGD(),
              batchSize: Int,
              seed: Option[Int] = None, numOfEpoch:Int = 2) : Solver = {
 
@@ -54,7 +55,8 @@ class Sequential protected (layers: List[LayerConfig] = Nil) {
 
 
      val model = new SequentialModel(newLayers)
-     val config = Config(layers, loss, lr, batchSize, numOfEpoch = numOfEpoch)
+     val config = BuildConfig(layers, loss, optimizerConfig, batchSize, numOfEpoch = numOfEpoch)
+     val params = model.layers
      new Solver(model, config)
    }
 

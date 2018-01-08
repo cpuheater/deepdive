@@ -2,15 +2,23 @@ package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
 import com.cpuheater.deepdive.nn.layers.ParamType
+import com.cpuheater.deepdive.optimize.BaseOptimizer
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.api.ops.BaseOp
 import org.nd4j.linalg.dataset.api.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
+
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
-class Solver(model: SequentialModel, config: Config) {
+class Solver(model: SequentialModel,
+             config: BuildConfig) extends SolverSupport {
+
+  private val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
+
 
   def fit(dataSet: DataSet): Unit = doEpoch{
     dataSet.batchBy(config.batchSize).zipWithIndex.foreach{
@@ -39,7 +47,6 @@ class Solver(model: SequentialModel, config: Config) {
         iterator.reset()
   }
 
-
   private def doEpoch[T](f : => Unit) =
     for(i <- 1 to config.numOfEpoch){
        println(s"Epoch ${i}")
@@ -47,21 +54,19 @@ class Solver(model: SequentialModel, config: Config) {
     }
 
 
-
   def predict(x: INDArray) = {
     model.predict(x)
   }
 
-
-  private def step(x: INDArray, y: INDArray):Unit = {
+  private def step(x: INDArray, y: INDArray): Unit = {
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
     println(s"loss: $loss")
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
         val wKey = ParamType.toString(ParamType.W, index+1)
         val bKey = ParamType.toString(ParamType.B, index+1)
-        layer.params(wKey) = layer.params(wKey) - grads(wKey) * config.lr
-        layer.params(bKey) = layer.params(bKey) - grads(bKey) * config.lr
+        layer.params(wKey) = optimizer.optimize(layer.params(wKey), grads(wKey), wKey)
+        layer.params(bKey) = optimizer.optimize(layer.params(bKey), grads(bKey), bKey)
     }
 
   }

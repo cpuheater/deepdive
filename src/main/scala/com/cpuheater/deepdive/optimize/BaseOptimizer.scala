@@ -4,6 +4,6 @@ import org.nd4j.linalg.api.ndarray.INDArray
 
 trait BaseOptimizer {
 
-  def optimize(grad: INDArray): INDArray
+  def optimize(param: INDArray, grad: INDArray, key: String): INDArray
 
 }

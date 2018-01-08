@@ -1,7 +1,6 @@
 package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.lossfunctions.{CrossEntropyLoss, MSELoss}
-import com.cpuheater.deepdive.nn.core.Activation
 import com.cpuheater.deepdive.nn.layers.Dense
 import com.cpuheater.deepdive.nn.models.Sequential
 import com.cpuheater.deepdive.util.TestSupport
@@ -18,49 +17,14 @@ import org.nd4s.Implicits._
 
 class NNSpec extends TestSupport {
 
-/*
+
   it should "cross entropy 0.9838" in {
 
-    val input = 400
-    val hidden = 25
-    val output = 10
 
-    val nbOfEpoch = 30
-
-    val learningRate = 0.5
-    val batchSize = 10
-
-    val (features, labels) = readFromFile
-    val nbOfExamples = features.rows()
-
-    val network = Sequential()
-
-    network.add(Dense(nbOutput = 25, nbInput = 400, activation = Activation.Sigmoid))
-    network.add(Dense(nbInput = 25, nbOutput = 10, activation = Activation.Sigmoid))
-
-
-    val dataSet = new DataSet(features, labels)
-
-    network.compile(CrossEntropyLoss)
-    network.fit(dataSet, nbOfEpoch, batchSize, learningRate)
-
-    val correct = (0 until nbOfExamples).foldLeft(0){
-      case (accum, index) =>
-        val output = network.predict(features.getRow(index).T)
-        val pred: Int = Nd4j.argMax(output).getInt(0) +1
-        val target = Nd4j.argMax(labels.getRow(index)).getInt(0) +1
-        println(s"pred ${pred}, index ${target}")
-        if(pred == target)
-          accum +1
-        else
-          accum
-    }
-
-    println(s"ulalala set accuracy: ${correct.toDouble/nbOfExamples} %")
   }
 
 
-
+/*
   it should "accuracy 0.9838" in {
 
     val input = 400

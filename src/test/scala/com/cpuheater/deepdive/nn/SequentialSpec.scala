@@ -2,6 +2,7 @@ package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.activations.{Identity, ReLU}
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
+import com.cpuheater.deepdive.nn.Optimizer.SGD
 import com.cpuheater.deepdive.nn.core.{OldMultiLayerNetwork, OldSolver}
 import com.cpuheater.deepdive.nn.layers.ParamType
 import com.cpuheater.deepdive.util.TestSupport
@@ -28,7 +29,7 @@ class SequentialSpec extends TestSupport{
       .add(Linear(3, 3, activation = ReLU))
         .add(Linear(3, 3, activation = ReLU))
           .add(Linear(3, 10))
-      .build(loss, lr, batchSize, seed=Some(1))
+      .build(loss, Optimizer.SGD(1e-3), batchSize, seed=Some(1))
 
     model.fit(dataSet)
 
