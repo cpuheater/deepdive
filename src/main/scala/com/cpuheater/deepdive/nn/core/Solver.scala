@@ -17,28 +17,29 @@ import scala.collection.mutable
 class Solver(model: SequentialModel,
              config: BuildConfig) extends SolverSupport {
 
-  private val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
-
 
   def fit(dataSet: DataSet): Unit = doEpoch{
+    optimizer =>
+
     dataSet.batchBy(config.batchSize).zipWithIndex.foreach{
       case (batch, index) =>
         println(s"Batch ${index}")
         val x = batch.getFeatures
         val y = batch.getLabels
-        step(x, y)
+        step(x, y, optimizer)
     }
   }
 
 
   def fit(iterator: DataSetIterator): Unit = doEpoch{
+    optimizer =>
       var continue = iterator.hasNext
       while(continue){
         val next = iterator.next()
         if(next.getFeatures == null ||  next.getLabels == null) {
           continue = false
         } else {
-          step(next.getFeatures, next.getLabels)
+          step(next.getFeatures, next.getLabels, optimizer)
           continue = iterator.hasNext
         }
 
@@ -47,18 +48,20 @@ class Solver(model: SequentialModel,
         iterator.reset()
   }
 
-  private def doEpoch[T](f : => Unit) =
-    for(i <- 1 to config.numOfEpoch){
-       println(s"Epoch ${i}")
-       f
+  private def doEpoch[T](f : BaseOptimizer=> Unit) = {
+    val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
+    for (i <- 1 to config.numOfEpoch) {
+      println(s"Epoch ${i}")
+      f(optimizer)
     }
+  }
 
 
   def predict(x: INDArray) = {
     model.predict(x)
   }
 
-  private def step(x: INDArray, y: INDArray): Unit = {
+  private def step(x: INDArray, y: INDArray, optimizer: BaseOptimizer): Unit = {
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
     println(s"loss: $loss")
     model.layers.zipWithIndex.foreach {

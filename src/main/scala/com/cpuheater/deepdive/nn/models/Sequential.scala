@@ -39,8 +39,6 @@ class Sequential {
 
 }
 
-
-
 object Sequential {
 
   def apply() : Sequential = new Sequential()
