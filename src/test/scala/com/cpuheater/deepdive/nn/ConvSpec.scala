@@ -285,15 +285,4 @@ class ConvSpec extends TestSupport {
            Array( 0.03514666,  0.26207083,  0.14320173 , 0.90101716)))
 
 
-
-
-
-
-
-
-
-
-
-
-
 }

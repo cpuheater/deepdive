@@ -69,7 +69,6 @@ class MultiSpec extends TestSupport {
     }
 
     val labels = Nd4j.create(features.length, 10)
-    val dupa = labelsArray.flatten
     val labelsNDarray = labelsArray.flatten.zipWithIndex.foreach{ case (value, index) => labels(index, ->) =   oneHotMap.getRow(value.toInt)}
     (Nd4j.create(features), labels)
   }
