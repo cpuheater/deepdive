@@ -1,8 +1,25 @@
-# deepdive - Deep Learning library in Scala
-Project is using Nd4j for linear algebra.
+# deepdive 
+
+deepdive - is a deep learning library implemented in Scala, it uses ND4j for linear algebra and signal processing. 
 
 
-### Fully Connected example
+
+#### Layers
+- **Linear**: Linear
+  
+- **Convolutional**: Convolutional
+
+
+#### Optimizers
+
+- **SGD**: the stochastic gradient descent
+  - *lr*: the learning rate, defaults to 0.01
+- **Momentum**: 
+  - *lr*: the learning rate, defaults to 0.1
+  - *momentum*: decay parameter, defaults to 0.9
+
+
+#### Fully Connected example
 
 ```
 val dataSet = new DataSet(features, labels)
@@ -20,7 +37,5 @@ val model = Sequential()
 model.fit(dataSet)
 
 ```
-
-
 
   <h2 align="center">Work in progress!</h2> 
