@@ -18,10 +18,10 @@ deepdive - is a deep learning library implemented in Scala, it uses ND4j for lin
   - *lr*: the learning rate, defaults to 0.1
   - *momentum*: decay parameter, defaults to 0.9
 
-
+## Examples
 #### Fully Connected example
 
-```
+```scala
 val dataSet = new DataSet(features, labels)
 
 val batchSize = 2
