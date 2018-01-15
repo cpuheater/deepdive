@@ -8,7 +8,7 @@ import org.nd4s.Implicits._
 class SGD(config: Optimizer.SGD) extends BaseOptimizer {
 
   def optimize(param: INDArray, grads: INDArray, key: String): INDArray = {
-    param - grads * config.lr
+    grads * config.lr
   }
 
 }

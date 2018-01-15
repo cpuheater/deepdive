@@ -16,6 +16,88 @@ import org.nd4s.Implicits._
 class FullyConnectedCIFARSpec extends TestSupport{
 
 
+  it should "cifar50-loss: " in {
+
+    val height: Int = 32
+    val width: Int = 32
+    val channels: Int = 3
+    val numLabels: Int = CifarLoader.NUM_LABELS
+    val numSamples: Int = 50
+    val batchSize: Int = 50
+
+    val (features, labels) = readFromFile("/cifar50.csv")
+    val nbOfExamples = features.rows()
+
+
+    val loss = SoftMaxLoss
+    val lr = 1e-3
+
+    val inputSize=3*32*32
+
+
+    val hiddenSize = 100
+
+    val model = Sequential()
+      .add(Linear(inputSize, hiddenSize , activation = ReLU))
+      .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
+      .add(Linear(hiddenSize, numLabels))
+      .build(loss, Optimizer.RMSProp(lr), batchSize, seed=Some(1), numOfEpoch = 10)
+
+    val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
+
+    model.fit(new DataSet(reshapedFeatures, labels))
+
+    val pred = model.predict(features)
+    val indicies = Nd4j.argMax(pred, 1)
+    val lindicies = Nd4j.argMax(labels, 1)
+
+    println(indicies)
+    println(lindicies)
+
+  }
+
+
+  it should "cifar50-loss: 2.138728741556406E-6" in {
+
+    val height: Int = 32
+    val width: Int = 32
+    val channels: Int = 3
+    val numLabels: Int = CifarLoader.NUM_LABELS
+    val numSamples: Int = 50
+    val batchSize: Int = 50
+
+    val (features, labels) = readFromFile("/cifar50.csv")
+    val nbOfExamples = features.rows()
+
+
+    val loss = SoftMaxLoss
+    val lr = 1e-3
+
+    val inputSize=3*32*32
+
+
+    val hiddenSize = 100
+
+    val model = Sequential()
+      .add(Linear(inputSize, hiddenSize , activation = ReLU))
+      .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
+      .add(Linear(hiddenSize, numLabels))
+      .build(loss, Optimizer.Momentum(lr), batchSize, seed=Some(1), numOfEpoch = 10)
+
+    val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
+
+    model.fit(new DataSet(reshapedFeatures, labels))
+
+    val pred = model.predict(features)
+    val indicies = Nd4j.argMax(pred, 1)
+    val lindicies = Nd4j.argMax(labels, 1)
+
+    println(indicies)
+    println(lindicies)
+
+  }
+
+
   it should "cifar50-loss: 1.1513407342135907E-4" in {
 
     val height: Int = 32
@@ -68,7 +150,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
 
   }
 
-  it should "cross entropy 0.9838" in {
+  it should "cross entropy 1.639133074604615E-6" in {
 
     val height: Int = 32
     val width: Int = 32
@@ -113,9 +195,6 @@ class FullyConnectedCIFARSpec extends TestSupport{
     val pred = model.predict(features)
     val indicies = Nd4j.argMax(pred, 1)
     val lindicies = Nd4j.argMax(labels, 1)
-
-    println(indicies)
-    println(lindicies)
 
   }
 

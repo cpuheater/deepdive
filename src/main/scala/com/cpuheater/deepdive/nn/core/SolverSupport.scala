@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.nn.Optimizer
-import com.cpuheater.deepdive.optimize.{BaseOptimizer, Momentum, SGD}
+import com.cpuheater.deepdive.optimize.{BaseOptimizer, Momentum, RMSProp, SGD}
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 
@@ -9,11 +9,13 @@ import scala.collection.mutable
 
 trait SolverSupport {
 
-  def buildOptimizer(config: BuildConfig, params: Map[String, INDArray] ): BaseOptimizer = config.optimizer match {
+  protected def buildOptimizer(config: BuildConfig, params: Map[String, INDArray] ): BaseOptimizer = config.optimizer match {
     case config: Optimizer.SGD =>
       new SGD(config)
     case config: Optimizer.Momentum =>
-      new Momentum(config, mutable.Map(params.toSeq: _*))
+      new Momentum(config, createParams(Map(params.toSeq: _*)))
+    case config: Optimizer.RMSProp =>
+      new RMSProp(config, createParams(Map(params.toSeq: _*)))
   }
 
 

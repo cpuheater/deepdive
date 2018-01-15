@@ -17,29 +17,26 @@ import scala.collection.mutable
 class Solver(model: SequentialModel,
              config: BuildConfig) extends SolverSupport {
 
+  private val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
 
   def fit(dataSet: DataSet): Unit = doEpoch{
-    optimizer =>
-
     dataSet.batchBy(config.batchSize).zipWithIndex.foreach{
       case (batch, index) =>
         println(s"Batch ${index}")
         val x = batch.getFeatures
         val y = batch.getLabels
-        step(x, y, optimizer)
+        step(x, y)
     }
   }
 
-
   def fit(iterator: DataSetIterator): Unit = doEpoch{
-    optimizer =>
       var continue = iterator.hasNext
       while(continue){
         val next = iterator.next()
         if(next.getFeatures == null ||  next.getLabels == null) {
           continue = false
         } else {
-          step(next.getFeatures, next.getLabels, optimizer)
+          step(next.getFeatures, next.getLabels)
           continue = iterator.hasNext
         }
 
@@ -48,32 +45,29 @@ class Solver(model: SequentialModel,
         iterator.reset()
   }
 
-  private def doEpoch[T](f : BaseOptimizer=> Unit) = {
-    val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
+  private def doEpoch[T](f : => Unit) = {
     for (i <- 1 to config.numOfEpoch) {
       println(s"Epoch ${i}")
-      f(optimizer)
+      f
     }
   }
-
 
   def predict(x: INDArray) = {
     model.predict(x)
   }
 
-  private def step(x: INDArray, y: INDArray, optimizer: BaseOptimizer): Unit = {
+  private def step(x: INDArray, y: INDArray): Unit = {
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
     println(s"loss: $loss")
     model.layers.zipWithIndex.foreach {
       case (layer, index) =>
         val wKey = ParamType.toString(ParamType.W, index+1)
         val bKey = ParamType.toString(ParamType.B, index+1)
-        layer.params(wKey) = optimizer.optimize(layer.params(wKey), grads(wKey), wKey)
-        layer.params(bKey) = optimizer.optimize(layer.params(bKey), grads(bKey), bKey)
+        layer.params(wKey) -= optimizer.optimize(layer.params(wKey), grads(wKey), wKey)
+        layer.params(bKey) -= optimizer.optimize(layer.params(bKey), grads(bKey), bKey)
     }
 
   }
-
 
   def params(): Map[String, INDArray] = {
     model.layers.flatMap(_.params).toMap
