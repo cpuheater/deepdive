@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, ReLU}
-import com.cpuheater.deepdive.nn.{Conv, Linear}
+import com.cpuheater.deepdive.nn.{Conv2d, Linear}
 import com.cpuheater.deepdive.nn.layers.ParamType.PreOutput
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.convolution.Convolution
@@ -13,7 +13,7 @@ import org.nd4s.Implicits._
 
 import scala.collection.mutable
 
-class ConvLayer(config: Conv,
+class ConvLayer(config: Conv2d,
                 override val params: mutable.Map[String, INDArray], layerNb: Int) extends Layer {
 
 

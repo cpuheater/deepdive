@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, ReLU}
-import com.cpuheater.deepdive.nn.{Conv, Linear, MaxPool}
+import com.cpuheater.deepdive.nn.{Conv2d, Linear, MaxPool}
 import com.cpuheater.deepdive.nn.layers.ParamType.PreOutput
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.api.ops.impl.transforms.IsMax

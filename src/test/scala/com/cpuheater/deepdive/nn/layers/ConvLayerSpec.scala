@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, Identity, ReLU}
-import com.cpuheater.deepdive.nn.Conv
+import com.cpuheater.deepdive.nn.Conv2d
 import com.cpuheater.deepdive.nn.layers.Convolutional
 import com.cpuheater.deepdive.util.TestSupport
 import org.junit.Assert.assertEquals
@@ -32,7 +32,7 @@ class ConvLayerSpec extends TestSupport {
     val stride = 2
     val padding = 1
 
-    val config = Conv(height = height,
+    val config = Conv2d(height = height,
       width = width,
       channels = channels,
       nbOfFilters = nbOfFilters,

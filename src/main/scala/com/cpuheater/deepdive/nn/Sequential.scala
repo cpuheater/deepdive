@@ -2,8 +2,8 @@ package com.cpuheater.deepdive.nn
 
 
 import com.cpuheater.deepdive.lossfunctions.LossFunction2
-import com.cpuheater.deepdive.nn.layers.{ConvLayer, LinearLayer, ParamType}
-import com.cpuheater.deepdive.nn.core.{BuildConfig, SequentialModel, SolverSupport, Solver}
+import com.cpuheater.deepdive.nn.layers.{ConvLayer, DropoutLayer, LinearLayer, ParamType}
+import com.cpuheater.deepdive.nn.core.{BuildConfig, SequentialModel, Solver, SolverSupport}
 import com.cpuheater.deepdive.weights.WeightsInitializer
 
 import scala.collection.JavaConverters._
@@ -37,7 +37,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
            ParamType.toString(ParamType.B, index) -> b)
          new LinearLayer(linearConfig, params, index)
 
-       case (convConfig: Conv, index) =>
+       case (convConfig: Conv2d, index) =>
 
          val w = WeightsInitializer.initWeights(
            WeightsInitType.UNIFORM,
@@ -50,6 +50,9 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
            ParamType.toString(ParamType.B, index) -> b)
 
          new ConvLayer(convConfig, params, index)
+
+       case (dropoutConfig: Dropout, index) =>
+         new DropoutLayer(dropoutConfig, index)
 
      }
 
