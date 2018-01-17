@@ -33,7 +33,8 @@ class DropoutLayer(config: Dropout,
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
     if(isTraining){
       mask = Nd4j.getExecutioner.exec(new BinomialDistribution(Nd4j.zeros(x.shape(): _*), 1, config.dropOut))
-      x * mask
+      val out = x * mask/config.dropOut
+      out
     } else {
       x
     }

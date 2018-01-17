@@ -5,6 +5,8 @@ package object layers {
   trait ParamType
 
   object ParamType {
+    case object H extends ParamType
+    case object WH extends ParamType
     case object W extends ParamType
     case object B extends ParamType
     case object PreOutput extends ParamType

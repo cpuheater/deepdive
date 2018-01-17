@@ -34,12 +34,12 @@ class SequentialSpec extends TestSupport{
     model.fit(dataSet)
 
     val params = model.params()
-    val ala = params(ParamType.toString(ParamType.B, 3))
-    ArrayUtil.equals(params(ParamType.toString(ParamType.W, 1)).data().asFloat(), Array(-0.054015346,-0.005436676,0.032674875,-0.0718516,0.11479664,0.011154394,0.118019484,-0.08637421,0.059055984)) should be(true)
+    val ala = params(ParamType.toString(ParamType.W, 1))
+    ArrayUtil.equals(params(ParamType.toString(ParamType.W, 1)).data().asFloat(), Array(-0.054015346,-0.0718516,0.118019484,-0.005436676,0.11479664,-0.08637421,0.032674875,0.011154394,0.059055984)) should be(true)
     ArrayUtil.equals(params(ParamType.toString(ParamType.B, 1)).data().asFloat(), Array(-4.8100333E-6,8.964504E-6,2.1727017E-6)) should be(true)
-    ArrayUtil.equals(params(ParamType.toString(ParamType.W, 2)).data().asFloat(), Array(0.01889134,0.102771536,0.029062808,0.05503489,0.1900736,-0.051578466,-0.06861945,-0.08821113,-0.007827893)) should be(true)
+    ArrayUtil.equals(params(ParamType.toString(ParamType.W, 2)).data().asFloat(), Array(0.01889134,0.05503489,-0.06861945,0.102771536,0.1900736,-0.08821113,0.029062808,-0.051578466,-0.007827893)) should be(true)
     ArrayUtil.equals(params(ParamType.toString(ParamType.B, 2)).data().asFloat(), Array(8.918694E-5,-8.645359E-5,0.0)) should be(true)
-    ArrayUtil.equals(params(ParamType.toString(ParamType.W, 3)).data().asFloat(), Array(-0.060899522,-0.10935635,0.030858487,-0.04728897,-0.0054429313,-0.11543602,-0.09133812,0.06194661,-0.15984105,0.11299213,0.1356058,-0.08211454,0.09325509,-4.920495E-4,-0.16787094,0.09738797,-0.035208426,-0.124616444,-0.10728555,-0.14021744,0.08181707,0.12429051,0.11740947,0.06699165,-0.082527466,-0.015832765,-0.08669945,0.014345484,-0.09635385,0.09423958)) should be(true)
+    ArrayUtil.equals(params(ParamType.toString(ParamType.W, 3)).data().asFloat(), Array(-0.060899522,-0.04728897,-0.09133812,0.11299213,0.09325509,0.09738797,-0.10728555,0.12429051,-0.082527466,0.014345484,-0.10935635,-0.0054429313,0.06194661,0.1356058,-4.920495E-4,-0.035208426,-0.14021744,0.11740947,-0.015832765,-0.09635385,0.030858487,-0.11543602,-0.15984105,-0.08211454,-0.16787094,-0.124616444,0.08181707,0.06699165,-0.08669945,0.09423958)) should be(true)
     ArrayUtil.equals(params(ParamType.toString(ParamType.B, 3)).data().asFloat(), Array(-1.9048853E-4,-1.9651007E-4,-1.9713305E-4,-2.1485498E-4,7.9395995E-4,-2.0446419E-4,-1.8620977E-4,-2.146526E-4,-1.9377633E-4,8.041295E-4)) should be(true)
 
 

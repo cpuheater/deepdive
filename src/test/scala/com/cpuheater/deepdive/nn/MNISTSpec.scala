@@ -14,7 +14,7 @@ class MNISTSpec extends TestSupport {
 
 
   it should "cross entropy mnist" in {
-
+/*
     val input = 28*28
     val hidden = 30
     val output = 10
@@ -59,7 +59,7 @@ class MNISTSpec extends TestSupport {
       }
     }
 
-    println(s"Training set accuracy: ${count.toFloat/total} %")
+    println(s"Training set accuracy: ${count.toFloat/total} %")*/
   }
 
 }

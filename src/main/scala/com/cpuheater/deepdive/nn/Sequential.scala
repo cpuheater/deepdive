@@ -2,7 +2,7 @@ package com.cpuheater.deepdive.nn
 
 
 import com.cpuheater.deepdive.lossfunctions.LossFunction2
-import com.cpuheater.deepdive.nn.layers.{ConvLayer, DropoutLayer, LinearLayer, ParamType}
+import com.cpuheater.deepdive.nn.layers._
 import com.cpuheater.deepdive.nn.core.{BuildConfig, SequentialModel, Solver, SolverSupport}
 import com.cpuheater.deepdive.weights.WeightsInitializer
 
@@ -53,6 +53,26 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
 
        case (dropoutConfig: Dropout, index) =>
          new DropoutLayer(dropoutConfig, index)
+       case (rnnConfig: RNN, index) =>
+         val w = WeightsInitializer.initWeights(
+           WeightsInitType.UNIFORM,
+           Array(rnnConfig.nbInput,
+             rnnConfig.nbOutput))
+
+         val wh = WeightsInitializer.initWeights(
+           WeightsInitType.UNIFORM,
+           Array(rnnConfig.nbOutput,
+             rnnConfig.nbOutput))
+
+         val h = Nd4j.zeros(rnnConfig.nbOutput)
+         val b = Nd4j.zeros(rnnConfig.nbOutput)
+         val params = mutable.Map[String, INDArray](
+           ParamType.toString(ParamType.W, index) -> w,
+           ParamType.toString(ParamType.B, index) -> b,
+           ParamType.toString(ParamType.WH, index) -> wh,
+           ParamType.toString(ParamType.H, index) -> h)
+
+         new RNNLayer(rnnConfig, params, index)
 
      }
 
