@@ -37,7 +37,7 @@ class LinearLayer(layerConfig: Linear,
     out
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
+  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
     val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
     val x = cache(ParamType.toString(ParamType.X, layerNb))
     val w = params(ParamType.toString(ParamType.W, layerNb))
@@ -49,8 +49,8 @@ class LinearLayer(layerConfig: Linear,
     val dx = da.dot(w.T).reshape(x.shape(): _*)
     val dw = x.reshape(x.shape()(0), -1).T.dot(da)
     val db = da.sum(0)
-    (dx, dw, db)
 
+    GradResult(dx, Map(s"${ParamType.W}${layerNb}" ->dw, s"${ParamType.B}${layerNb}"->db))
   }
 
   override def toString(): String = s"number of input = ${nbInput} number of output = ${nbOutput}"

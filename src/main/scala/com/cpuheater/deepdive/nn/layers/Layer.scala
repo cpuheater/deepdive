@@ -13,12 +13,14 @@ trait Layer {
 
   def forward(x: INDArray, isTraining: Boolean=true): INDArray
 
-  def backward(x: INDArray, isTraining: Boolean=true): (INDArray, INDArray, INDArray)
+  def backward(x: INDArray, isTraining: Boolean=true): GradResult
 
   def params: mutable.Map[String, INDArray]
 
 }
 
+
+case class GradResult(dx: INDArray, grads: Map[String, INDArray] = Map.empty[String, INDArray])
 
 
 

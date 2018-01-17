@@ -45,25 +45,13 @@ class RNNLayer(layerConfig: RNN,
     out
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
+  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
     val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
     val x = cache(ParamType.toString(ParamType.X, layerNb))
     val w = params(ParamType.toString(ParamType.W, layerNb))
     val wh = params(ParamType.toString(ParamType.WH, layerNb))
     val hidden = params(ParamType.toString(ParamType.H, layerNb))
     val b = params(ParamType.toString(ParamType.B, layerNb))
-
-    /**
-      * Wx, Wh, x, prev_h, h_raw = cache
-    dh_raw = (1 - np.tanh(h_raw) ** 2) * dnext_h
-    dx = np.dot(dh_raw, Wx.T)
-    dprev_h = np.dot(dh_raw, Wh.T)
-    dWx = np.dot(x.T, dh_raw)
-    dWh = np.dot(prev_h.T, dh_raw)
-    db = np.sum(dh_raw, axis=0)
-
-      *
-      */
 
     val da = activationFn.derivative(preOutput.dup()) * dout
 
@@ -72,7 +60,11 @@ class RNNLayer(layerConfig: RNN,
     val dw = x.T.dot(da)
     val dwh = hidden.T.dot(da)
     val db = Nd4j.sum(da, 0)
-    (dx, dhidden, dw/*, dwh, db*/)
+    val grads = Map(s"${ParamType.W}${layerNb}" ->dw,
+                    s"${ParamType.B}${layerNb}"->db,
+                    s"${ParamType.WH}${layerNb}"->wh,
+                    s"${ParamType.H}${layerNb}"->dhidden)
+    GradResult(dx, grads)
 
   }
 

@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.activations.{ActivationFn, Identity, Tanh}
-import com.cpuheater.deepdive.nn.layers.{ParamType, RNNLayer}
+import com.cpuheater.deepdive.nn.layers.{GradResult, ParamType, RNNLayer}
 import com.cpuheater.deepdive.util.TestSupport
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
@@ -49,7 +49,7 @@ b = np.random.randn(H)
 
     val out = rnn.forward(x)
 
-    val (_, _, _) = rnn.backward(out)
+    val GradResult(_, _) = rnn.backward(out)
 
 
   }

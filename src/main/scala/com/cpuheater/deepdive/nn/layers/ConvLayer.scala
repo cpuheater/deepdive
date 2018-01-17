@@ -53,7 +53,7 @@ class ConvLayer(config: Conv2d,
     out
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
+  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
     val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
     val x = cache(ParamType.toString(ParamType.X, layerNb))
     val w = params(ParamType.toString(ParamType.W, layerNb))
@@ -90,8 +90,7 @@ class ConvLayer(config: Conv2d,
       config.padding,
       config.padding, config.height, config.width)
 
-    (dx, dw, db)
-
+    GradResult(dx, Map(s"${ParamType.W}${layerNb}" ->dw, s"${ParamType.B}${layerNb}"->db))
   }
 
   def backprop(dout: INDArray, x: INDArray, weights: INDArray, b: INDArray,

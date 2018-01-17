@@ -36,7 +36,7 @@ class DropoutLayerSpec extends TestSupport {
 
     ArrayUtil.equals(out.data().asFloat(), Array(-1.7628788,0.3658216,1.117952,0.94071496,0.20405962,-0.31889012,0.28690463,0.5383384,-0.60838443,-0.47225517)) should be(true)
 
-    val (dx, _, _) = layer.backward(dout, isTraining)
+    val GradResult(dx, _) = layer.backward(dout, isTraining)
 
     ArrayUtil.equals(dx.data().asFloat(), Array(-0.5451878,-0.72581875,1.1784248,-0.05978557,1.1411147,-0.86540264,0.3228806,0.10490196,0.58895004,-0.89353514)) should be(true)
   }

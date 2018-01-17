@@ -41,12 +41,12 @@ class DropoutLayer(config: Dropout,
 
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
+  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
     if(isTraining){
       val out = dout * mask
-      (out, out, out)
+      GradResult(out)
     } else {
-      (dout, dout, dout)
+      GradResult(dout)
     }
 
   }

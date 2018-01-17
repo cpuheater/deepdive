@@ -45,7 +45,7 @@ class MaxPoolLayer(config: MaxPool,
     output
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): (INDArray, INDArray, INDArray) = {
+  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
     val x = cache(ParamType.toString(ParamType.X, layerNb))
     val Array(batchSize, channels, _, _) = x.shape()
 
@@ -68,7 +68,7 @@ class MaxPoolLayer(config: MaxPool,
     val tempEpsilon = Nd4j.create(Array[Int](channels, batchSize, config.height, config.width), 'c')
     val outEpsilon = tempEpsilon.permute(1, 0, 2, 3)
     Convolution.col2im(col6dPermuted, outEpsilon, config.stride, config.stride, 0, 0, config.height, config.width)
-    (outEpsilon, outEpsilon, outEpsilon)
+    GradResult(outEpsilon)
   }
 
 }
