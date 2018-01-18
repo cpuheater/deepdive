@@ -12,7 +12,7 @@ object WeightsInitializer {
 
    def initWeights(`type`: WeightsInitType, shape: Array[Int], scale: Double = 0.1): INDArray = {
        `type` match {
-           case WeightsInitType.UNIFORM  =>
+           case WeightsInitType.NORMAL  =>
              Nd4j.randn(shape) * scale
            /*case WeightsInitType.XAVIER =>
              Nd4j.randn(Array(nbInput, nbOutput)).muli(FastMath.sqrt(2.0 / (nbInput + nbOutput)))*/

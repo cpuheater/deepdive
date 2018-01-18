@@ -29,7 +29,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
      val newLayers = layers.zip(1 to layers.length).map{
        case (linearConfig: Linear, index) =>
          val w = WeightsInitializer.initWeights(
-           WeightsInitType.UNIFORM,
+           WeightsInitType.NORMAL,
            Array(linearConfig.nbInput,
            linearConfig.nbOutput))
          val b = Nd4j.zeros(linearConfig.nbOutput)
@@ -40,7 +40,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
        case (convConfig: Conv2d, index) =>
 
          val w = WeightsInitializer.initWeights(
-           WeightsInitType.UNIFORM,
+           WeightsInitType.NORMAL,
            Array(convConfig.nbOfFilters,
              convConfig.channels,
              convConfig.filterHeight,
@@ -55,12 +55,12 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
          new DropoutLayer(dropoutConfig, index)
        case (rnnConfig: RNN, index) =>
          val w = WeightsInitializer.initWeights(
-           WeightsInitType.UNIFORM,
+           WeightsInitType.NORMAL,
            Array(rnnConfig.nbInput,
              rnnConfig.nbOutput))
 
          val wh = WeightsInitializer.initWeights(
-           WeightsInitType.UNIFORM,
+           WeightsInitType.NORMAL,
            Array(rnnConfig.nbOutput,
              rnnConfig.nbOutput))
 

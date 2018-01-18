@@ -6,7 +6,7 @@ package object nn {
 
   object WeightsInitType {
     case object XAVIER extends WeightsInitType
-    case object UNIFORM extends WeightsInitType
+    case object NORMAL extends WeightsInitType
 
   }
 
