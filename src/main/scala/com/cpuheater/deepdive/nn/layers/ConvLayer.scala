@@ -30,6 +30,12 @@ class ConvLayer(config: Conv2d,
 
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
+    val (out, _, _) = innerForward(x, isTraining)
+    out
+  }
+
+
+  private def innerForward(x: INDArray, isTraining: Boolean): (INDArray, INDArray, INDArray) = {
     val x2col =  Convolution.im2col(x,
       config.filterHeight,
       config.filterWidth,
@@ -45,20 +51,16 @@ class ConvLayer(config: Conv2d,
     val bb = params(ParamType.toString(ParamType.B, layerNb)).reshape(params(ParamType.toString(ParamType.B, layerNb)).columns(), 1).broadcast(Array(params(ParamType.toString(ParamType.B, layerNb)).columns(), x2col.size(0) * x2col.size(5) * x2col.size(4)): _*)
     val preOutput = weightsReshaped.dot(x2colReshaped) + bb
     val preOutputReshaped = preOutput.reshape(config.nbOfFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
-    cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutputReshaped
-    cache(ParamType.toString(ParamType.X, layerNb)) = x
-    cache(ParamType.toString(ParamType.X2Cols, layerNb)) = x2colReshaped
 
     val out = activationFn(preOutputReshaped)
-    out
+    (out, preOutputReshaped, x2colReshaped)
   }
 
   override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
-    val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
-    val x = cache(ParamType.toString(ParamType.X, layerNb))
+
+    val (out, preOutput, x2cols) = innerForward(x, isTraining)
     val w = params(ParamType.toString(ParamType.W, layerNb))
     val b = params(ParamType.toString(ParamType.B, layerNb))
-    val x2cols = cache(ParamType.toString(ParamType.X2Cols, layerNb))
     val Array(batchSize, _, _, _) = x.shape()
 
 

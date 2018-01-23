@@ -2,7 +2,6 @@ package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, Identity, ReLU}
 import com.cpuheater.deepdive.nn.{Conv2d, Dropout}
-import com.cpuheater.deepdive.nn.layers.Convolutional
 import com.cpuheater.deepdive.util.TestSupport
 import org.junit.Assert.assertEquals
 import org.nd4j.linalg.api.ndarray.INDArray
@@ -34,7 +33,7 @@ class DropoutLayerSpec extends TestSupport {
 
     val out = layer.forward(x, isTraining)
 
-    ArrayUtil.equals(out.data().asFloat(), Array(-1.7628788,0.3658216,1.117952,0.94071496,0.20405962,-0.31889012,0.28690463,0.5383384,-0.60838443,-0.47225517)) should be(true)
+    ArrayUtil.equals(out.data().asFloat(), Array(-1.9587543,0.40646845,1.2421689,1.0452389,0.22673291,-0.35432237,0.31878293,0.5981538,-0.6759827,-0.524728)) should be(true)
 
     val GradResult(dx, _) = layer.backward(x, dout, isTraining)
 

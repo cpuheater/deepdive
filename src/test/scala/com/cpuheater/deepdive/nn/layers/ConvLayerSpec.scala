@@ -2,7 +2,6 @@ package com.cpuheater.deepdive.nn.layers
 
 import com.cpuheater.deepdive.activations.{ActivationFn, Identity, ReLU}
 import com.cpuheater.deepdive.nn.Conv2d
-import com.cpuheater.deepdive.nn.layers.Convolutional
 import com.cpuheater.deepdive.util.TestSupport
 import org.junit.Assert.assertEquals
 import org.nd4j.linalg.api.ndarray.INDArray
