@@ -20,7 +20,10 @@ trait Layer {
 }
 
 
-case class GradResult(dx: INDArray, grads: Map[String, INDArray] = Map.empty[String, INDArray])
+case class GradResult(dx: INDArray,
+                      grads: Map[String, INDArray] = Map.empty[String, INDArray],
+                      hidden: Option[INDArray] = None,
+                      context: Option[INDArray] = None)
 
 
 

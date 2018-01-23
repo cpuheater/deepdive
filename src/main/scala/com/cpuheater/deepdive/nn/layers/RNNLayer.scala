@@ -30,10 +30,6 @@ class RNNLayer(layerConfig: RNN,
 
   def nbInput: Int = layerConfig.nbInput
 
-  override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
-     ???
-  }
-
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
     val (out, _)  = innerForward(x, isTraining)
@@ -84,7 +80,7 @@ class RNNLayer(layerConfig: RNN,
     FFData(x, out, preOutput, prevHidden, w, wh)
   }
 
-  def backwardNew(dout: INDArray, x: INDArray, isTraining: Boolean = true): GradResult = {
+  def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
 
     val (_, allData) = innerForward(x, isTraining)
 
@@ -117,7 +113,7 @@ class RNNLayer(layerConfig: RNN,
     val grads = Map(s"${ParamType.W}${layerNb}" ->dw,
       s"${ParamType.B}${layerNb}"->db,
       s"${ParamType.WH}${layerNb}"->dwh)
-    GradResult(dx, grads)
+    GradResult(dx, grads, hidden = Some(prevHidden))
 
   }
 
