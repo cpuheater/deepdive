@@ -3,6 +3,8 @@ package com.cpuheater.deepdive.nn
 import com.cpuheater.deepdive.activations.{ActivationFn, Identity, Tanh}
 import com.cpuheater.deepdive.nn.layers.{GradResult, ParamType, RNNLayer}
 import com.cpuheater.deepdive.util.TestSupport
+import org.nd4j.linalg.api.buffer.DataBuffer
+import org.nd4j.linalg.api.buffer.util.DataTypeUtil
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.indexing.NDArrayIndex
@@ -15,27 +17,36 @@ import scala.collection.mutable
 
 class RNNLayerSpec extends TestSupport {
 
-  it should "lstm" in {
+  it should "RNN" in {
 
-
-    /**
+    /***
       *
-      * N, D, H = 4, 5, 6
-x = np.random.randn(N, D)
-h = np.random.randn(N, H)
+      * x = np.ones((N, T* D)).reshape(N, T, D) + 0.1
+h0 = np.random.randn(N, H)
 Wx = np.random.randn(D, H)
 Wh = np.random.randn(H, H)
 b = np.random.randn(H)
       *
-      *
       */
 
-    val (n, d, h) = (4,2,3)
-    val x = Nd4j.linspace(-0.4, 1.2, n*d).reshape(n, d)
-    val hidden = Nd4j.linspace(-0.3, 0.7, n*h).reshape(n, h)
-    val wx = Nd4j.linspace(-2.1, 1.3, d*h).reshape(d, h)
-    val wh = Nd4j.linspace(-0.7, 2.2, h*h).reshape(h, h)
-    val b = Nd4j.linspace(0.3, 0.7, h)
+    Nd4j.setDataType(DataBuffer.Type.DOUBLE)
+
+    println(Nd4j.create(1, 2).data.dataType())
+    val (n, d, t, h) = (2,3,2, 3)
+    val x = Nd4j.linspace(0, 11, t*d*n).reshape(n, t, d)
+    println(x.data().dataType())
+    val hidden = Nd4j.zeros(n, h)
+    val wx = Nd4j.create(Array(Array(-0.1497979,   1.86172902, -1.4255293d ),
+    Array(-0.3763567,  -0.34227539 , 0.29490764d),
+    Array(-0.83732373 , 0.95218767,  1.32931659)))
+
+
+
+    val wh = Nd4j.create(Array(Array( 0.52465245, -0.14809998,  0.88953195),
+      Array( 0.12444653 , 0.99109251,  0.03514666),
+      Array( 0.26207083 , 0.14320173,  0.90101716)))
+
+    val b = Nd4j.create(Array( 0.23185863, -0.79725793d,  0.12001014))
 
     val layerNb = 1
 
@@ -49,76 +60,15 @@ b = np.random.randn(H)
 
     val out = rnn.forward(x)
 
-    val GradResult(_, _) = rnn.backward(out)
+
+    val dout = Nd4j.create(Array( 0.41794341,  1.39710028, -1.78590431, -0.70882773, -0.07472532, -0.77501677,
+    -0.1497979,   1.86172902 ,-1.4255293 , -0.3763567 , -0.34227539 , 0.29490764)).reshape(n, t, d)
+
+    val GradResult(dx, grads) = rnn.backwardNew(dout, x)
+    println(grads)
 
 
   }
-
-
-  def preOutputStep(x: INDArray, prevH: INDArray,
-                    prevC: INDArray, wx: INDArray,
-                    wh: INDArray, b: INDArray) = {
-
-
-    /**
-      *
-      * wFFTranspose = recurrentWeights
-                            .get(NDArrayIndex.all(), interval(4 * hiddenLayerSize, 4 * hiddenLayerSize + 1))
-                            .transpose(); //current
-            wOOTranspose = recurrentWeights
-                            .get(NDArrayIndex.all(), interval(4 * hiddenLayerSize + 1, 4 * hiddenLayerSize + 2))
-                            .transpose(); //current
-            wGGTranspose = recurrentWeights
-                            .get(NDArrayIndex.all(), interval(4 * hiddenLayerSize + 2, 4 * hiddenLayerSize + 3))
-                            .transpose(); //previous
-
-      */
-
-    val h = prevH.size(1)
-    val a = (x.mmul(wx) + prevH.mmul(wh)).addiRowVector(b)
-    val ai = a.get(NDArrayIndex.all(), NDArrayIndex.interval(0*h, 1*h))
-    val af = a.get(NDArrayIndex.all(), NDArrayIndex.interval(1*h, 2*h))
-    val ao = a.get(NDArrayIndex.all(), NDArrayIndex.interval(2*h, 3*h))
-    val ag = a.get(NDArrayIndex.all(), NDArrayIndex.interval(3*h, 4*h))
-    val i = sigmoid(ai)
-    val f = sigmoid(af)
-    val o = sigmoid(ao)
-    val g = tanh(ag)
-    val nextC = f * prevC + i * g
-    val nextH = o * tanh(nextC)
-
-    val cache = (h, x, wx, wh, a, i, f, o, g, prevC, prevH, nextC, prevH)
-    (nextH, nextC, cache)
-
-  }
-
-  def backpropStep(dnextH: INDArray, dnextC: INDArray, h: Int, x: INDArray,
-                   wx: INDArray, wh: INDArray, a: INDArray, i: INDArray, f: INDArray, o: INDArray, g: INDArray,
-                   preC: INDArray, nextC: INDArray, prevH: INDArray) = {
-    val dout = dnextC * tanh(nextC)
-    val dc = (pow(tanh(nextC), 2).rsub(1)) * dnextH*o + dnextC
-    val df = dc * preC
-    val dprevC = dc *f
-    val di = g*dc
-    val dg = i * dc
-    val ai = a.get(NDArrayIndex.all(), NDArrayIndex.interval(0*h, 1*h))
-    val af = a.get(NDArrayIndex.all(), NDArrayIndex.interval(1*h, 2*h))
-    val ao = a.get(NDArrayIndex.all(), NDArrayIndex.interval(2*h, 3*h))
-    val ag = a.get(NDArrayIndex.all(), NDArrayIndex.interval(3*h, 4*h))
-    val dai = di * (sigmoid(ai).rsub(1)) * sigmoid(ai)
-    val daf = df * (sigmoid(af).rsub(1)) * sigmoid(af)
-    val dao = dout * (sigmoid(ao).rsub(1)) * sigmoid(ao)
-    val dag = dout * (sigmoid(ao).rsub(1)) * sigmoid(ao)
-    val da = Nd4j.hstack(dai, daf, dao, dag)
-    val dx = da.mmul(wx.T)
-    val dprevH = da.mmul(wh.T)
-    val db = da.sum(0)
-    val dwx = x.T.mmul(da)
-    val dwh = prevH.T.mmul(da)
-    (dx, dprevH, dprevC, dwx, dwh, db)
-  }
-
-
 
 
 }

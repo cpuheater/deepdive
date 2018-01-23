@@ -2,19 +2,11 @@ package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.lossfunctions.{LossFunction, LossFunction2, SoftMaxLoss}
 import com.cpuheater.deepdive.nn.layers.{GradResult, Layer, LinearLayer, ParamType}
-import com.cpuheater.deepdive.nn.core.FeedForwardNetwork
 
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 import org.nd4j.linalg.api.ndarray.INDArray
-import org.nd4j.linalg.dataset.api.DataSet
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
 import org.nd4j.linalg.factory.Nd4j
-import org.nd4j.linalg.ops.transforms.Transforms._
-import org.nd4s.Implicits._
-
-import scala.collection.JavaConverters._
-import scala.collection.JavaConversions._
 import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
 
