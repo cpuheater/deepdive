@@ -53,7 +53,7 @@ class ConvLayer(config: Conv2d,
     out
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
+  override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
     val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
     val x = cache(ParamType.toString(ParamType.X, layerNb))
     val w = params(ParamType.toString(ParamType.W, layerNb))

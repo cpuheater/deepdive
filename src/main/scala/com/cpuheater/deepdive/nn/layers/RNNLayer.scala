@@ -30,7 +30,7 @@ class RNNLayer(layerConfig: RNN,
 
   def nbInput: Int = layerConfig.nbInput
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
+  override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
      ???
   }
 

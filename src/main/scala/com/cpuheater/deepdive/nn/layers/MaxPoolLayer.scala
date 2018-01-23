@@ -45,7 +45,7 @@ class MaxPoolLayer(config: MaxPool,
     output
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
+  override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
     val x = cache(ParamType.toString(ParamType.X, layerNb))
     val Array(batchSize, channels, _, _) = x.shape()
 

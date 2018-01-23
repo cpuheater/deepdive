@@ -60,7 +60,7 @@ class ConvLayerSpec extends TestSupport {
 
     ArrayUtil.equals(out.data().asFloat(), Array(0.0,0.0,0.0,0.0,0.21027091,0.21661097,0.22847627,0.23004639,0.5081399,0.54309976,0.64082444,0.6710144,0.0,0.0,0.0,0.0,0.6910836,0.6688039,0.5948098,0.56776005,2.3627033,2.3690434,2.3809085,2.3824787)) should be(true)
 
-    val GradResult(dx, grads) = layer.backward(dout)
+    val GradResult(dx, grads) = layer.backward(x, dout)
 
     val dw = grads(s"${ParamType.W}${layerNb}")
     val db = grads(s"${ParamType.B}${layerNb}")

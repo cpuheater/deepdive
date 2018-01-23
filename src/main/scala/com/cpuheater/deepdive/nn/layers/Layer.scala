@@ -13,7 +13,7 @@ trait Layer {
 
   def forward(x: INDArray, isTraining: Boolean=true): INDArray
 
-  def backward(x: INDArray, isTraining: Boolean=true): GradResult
+  def backward(x: INDArray, dout: INDArray, isTraining: Boolean=true): GradResult
 
   def params: mutable.Map[String, INDArray]
 

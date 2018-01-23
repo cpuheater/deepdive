@@ -28,24 +28,25 @@ class LinearLayer(layerConfig: Linear,
 
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
+    val (preOutput, out)= innerForward(x, isTraining)
+    out
+  }
+
+  private def innerForward(x: INDArray, isTraining: Boolean): (INDArray, INDArray) = {
     val w = params(ParamType.toString(ParamType.W, layerNb))
     val b = params(ParamType.toString(ParamType.B, layerNb))
     val preOutput = x.reshape(x.shape()(0), -1).dot(w).addRowVector(b)
     val out = activationFn(preOutput)
-    cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutput
-    cache(ParamType.toString(ParamType.X, layerNb)) = x
-    out
+    /*cache(ParamType.toString(ParamType.PreOutput, layerNb)) = preOutput
+    cache(ParamType.toString(ParamType.X, layerNb)) = x*/
+    (preOutput, out)
   }
 
-  override def backward(dout: INDArray, isTraining: Boolean = true): GradResult = {
-    val preOutput = cache(ParamType.toString(ParamType.PreOutput, layerNb))
-    val x = cache(ParamType.toString(ParamType.X, layerNb))
+  override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
+    val (preOutput, _) = innerForward(x, isTraining)
     val w = params(ParamType.toString(ParamType.W, layerNb))
-    val b = params(ParamType.toString(ParamType.B, layerNb))
-
     val preOutputDupl = activationFn.derivative(preOutput.dup())
     val da = preOutputDupl * dout
-
     val dx = da.dot(w.T).reshape(x.shape(): _*)
     val dw = x.reshape(x.shape()(0), -1).T.dot(da)
     val db = da.sum(0)

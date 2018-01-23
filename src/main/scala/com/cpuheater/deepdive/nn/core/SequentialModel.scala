@@ -17,29 +17,29 @@ class SequentialModel(val layers: List[Layer]) {
   private val outputLayer = layers.last
 
 
-  private def forward(x: INDArray): INDArray = {
-    val lastHiddenScore = hiddenLayers.foldLeft(x){
-      case (score, layer) =>
-        val newScore = layer.forward(score)
-        newScore
+  private def forward(x: INDArray): List[INDArray] = {
+    val scores = hiddenLayers.foldLeft(List(x)){
+      case (accum, layer) =>
+        val newScore = layer.forward(accum.head)
+        newScore::accum
     }
 
-    outputLayer.forward(lastHiddenScore)
+    outputLayer.forward(scores.head)::scores
   }
 
   def forwardAndBackwardPass(x: INDArray, y: INDArray): (Double, Map[String, INDArray]) = {
 
-    val preOutput = forward(x)
+    val scores = forward(x)
 
-    val (loss, dout) = SoftMaxLoss.computeGradientAndScore(preOutput, y)
+    val (loss, dout) = SoftMaxLoss.computeGradientAndScore(scores.head, y)
 
-    val GradResult(dx, g) = outputLayer.backward(dout)
+    val GradResult(dx, g) = outputLayer.backward(scores.tail.head, dout)
 
     val grads = scala.collection.mutable.Map[String, INDArray](g.toSeq: _*)
 
-    hiddenLayers.reverse.zip(hiddenLayers.length to 1 by -1).foldLeft(dx){
-      case (dprev, (layer, index)) =>
-        val GradResult(dx, g) = layer.backward(dprev)
+    hiddenLayers.reverse.zip(scores.tail.tail).foldLeft(dx){
+      case (dprev, (layer, score)) =>
+        val GradResult(dx, g) = layer.backward(score, dprev)
         grads.putAll(g)
         dx
     }
@@ -48,7 +48,7 @@ class SequentialModel(val layers: List[Layer]) {
 
 
   def predict(x: INDArray): INDArray =  {
-    forward(x)
+    forward(x).head
   }
 
 
