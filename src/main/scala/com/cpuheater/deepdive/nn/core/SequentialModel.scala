@@ -33,13 +33,13 @@ class SequentialModel(val layers: List[Layer]) {
 
     val (loss, dout) = SoftMaxLoss.computeGradientAndScore(scores.head, y)
 
-    val GradResult(dx, g) = outputLayer.backward(scores.tail.head, dout)
+    val GradResult(dx, g, _, _) = outputLayer.backward(scores.tail.head, dout)
 
     val grads = scala.collection.mutable.Map[String, INDArray](g.toSeq: _*)
 
     hiddenLayers.reverse.zip(scores.tail.tail).foldLeft(dx){
       case (dprev, (layer, score)) =>
-        val GradResult(dx, g) = layer.backward(score, dprev)
+        val GradResult(dx, g, Some(hidden), Some(context)) = layer.backward(score, dprev)
         grads.putAll(g)
         dx
     }

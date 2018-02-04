@@ -99,7 +99,6 @@ class RNNLayer(layerConfig: RNN,
 
     (t-1 to 0).by(-1).foreach {
       time =>
-        val ula = dout.tensorAlongDimension(time, 0, 2)
         val doutTS = dout.tensorAlongDimension(time, 0, 2) + prevHidden
 
         val (dxTS, dhiddenTS, dwTS, dwhTS, dbTS) = backwardTimeStep(doutTS, allData(time))

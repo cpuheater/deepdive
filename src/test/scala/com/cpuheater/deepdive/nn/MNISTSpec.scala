@@ -5,6 +5,7 @@ import com.cpuheater.deepdive.lossfunctions.CrossEntropyLoss
 import com.cpuheater.deepdive.nn.layers.Dense
 import com.cpuheater.deepdive.util.TestSupport
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator
+import org.nd4j.linalg.api.ops.impl.transforms.Floor
 import org.nd4j.linalg.factory.Nd4j
 import org.nd4s.Implicits._
 
@@ -12,6 +13,16 @@ import org.nd4s.Implicits._
 
 class MNISTSpec extends TestSupport {
 
+
+  it should "cross entropy mnist2" in {
+    val indices = Nd4j.create(1, 4)
+    indices.putScalar(0, 0.0)
+    indices.putScalar(1, 2.0)
+    indices.putScalar(2, -1.0)
+    indices.putScalar(3, 1.0)
+
+    println(indices)
+  }
 
   it should "cross entropy mnist" in {
 /*

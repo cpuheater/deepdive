@@ -9,6 +9,9 @@ deepdive - is a deep learning library implemented in Scala, it uses ND4j for lin
   
 - **Convolutional**: Convolutional
 
+- **Embedding**: Embedding
+
+- **RNN**: Vanilla RNN
 
 #### Optimizers
 
