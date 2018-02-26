@@ -13,9 +13,9 @@ import org.nd4s.Implicits._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-class RNNLayer(layerConfig: RNN,
-                  override val params: mutable.Map[String, INDArray],
-                  layerNb: Int) extends Layer {
+class LSTMLayer(layerConfig: RNN,
+               override val params: mutable.Map[String, INDArray],
+               layerNb: Int) extends Layer {
 
   private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
   private val cacheTS: mutable.ListBuffer[Map[String, INDArray]] = new ListBuffer[Map[String, INDArray]]()
@@ -68,13 +68,14 @@ class RNNLayer(layerConfig: RNN,
   }
 
   private def forwardTimeStep(x: INDArray,
-                          prevHidden: INDArray,
-                          w: INDArray,
-                          wh: INDArray,
-                          b: INDArray): FFData = {
+                              prevHidden: INDArray,
+                              w: INDArray,
+                              wh: INDArray,
+                              b: INDArray): FFData = {
 
     val preOutput = (x.dot(w) + prevHidden.dot(wh)).addRowVector(b)
     val out = activationFn(preOutput)
+    //x: INDArray, out: INDArray, preOutput: INDArray, prevHidden: INDArray, w: INDArray, wh: INDArray
 
     FFData(x, out, preOutput, prevHidden, w, wh)
   }
