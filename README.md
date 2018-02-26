@@ -13,6 +13,8 @@ deepdive - is a deep learning library implemented in Scala, it uses ND4j for lin
 
 - **RNN**: Vanilla RNN
 
+- **LSTM**: LSTM
+
 #### Optimizers
 
 - **SGD**: the stochastic gradient descent

@@ -12,6 +12,7 @@ package object layers {
     case object PreOutput extends ParamType
     case object X extends ParamType
     case object X2Cols extends ParamType
+    case object C extends ParamType
 
     def toString(paramType: ParamType, index:Int) = s"${paramType}$index"
   }
