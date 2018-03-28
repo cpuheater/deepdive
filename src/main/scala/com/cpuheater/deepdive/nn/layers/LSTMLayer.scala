@@ -42,7 +42,6 @@ class LSTMLayer(layerConfig: LSTM,
     val b = params(ParamType.toString(ParamType.B, layerNb))
     val wh = params(ParamType.toString(ParamType.WH, layerNb))
     val prevH = params(ParamType.toString(ParamType.H, layerNb))
-    //val prevC = params(ParamType.toString(ParamType.C, layerNb))
 
     val Array(n, t, d) = x.shape()
     val h = wh.shape()(0)
@@ -100,25 +99,27 @@ class LSTMLayer(layerConfig: LSTM,
     val b = params(ParamType.toString(ParamType.B, layerNb))
     val wh = params(ParamType.toString(ParamType.WH, layerNb))
     var prevHidden = params(ParamType.toString(ParamType.H, layerNb))
+    var prevContext = Nd4j.zerosLike(prevHidden)
 
     val Array(n, t, d) = dout.shape()
     val h = wh.shape()(0)
 
     var dx = Nd4j.zeros(Array(n, t, d): _*)
-    var dw =  Nd4j.zeros(d, h)
-    var dwh = Nd4j.zeros(h, h)
-    var db = Nd4j.zeros(h)
+    var dw =  Nd4j.zeros(d, 4*h)
+    var dwh = Nd4j.zeros(h, 4*h)
+    var db = Nd4j.zeros(4*h)
 
     (t-1 to 0).by(-1).foreach {
       time =>
         val doutTS = dout.tensorAlongDimension(time, 0, 2) + prevHidden
 
-        val (dxTS, dhiddenTS, dwTS, dwhTS, dbTS) = backwardTimeStep(doutTS, allData(time))
+        val (dxTS, dprevHTS, dprevCTS, dwTS, dwhTS, dbTS) = backwardTimeStep(doutTS, prevContext, allData(time))
         dx.tensorAlongDimension(time, 0, 2).assign(dxTS)
         dw = dw + dwTS
         dwh = dwh + dwhTS
         db = db + dbTS
-        prevHidden = dhiddenTS
+        prevHidden = dprevHTS
+        prevContext = dprevCTS
     }
 
     val grads = Map(s"${ParamType.W}${layerNb}" ->dw,
@@ -129,21 +130,41 @@ class LSTMLayer(layerConfig: LSTM,
   }
 
 
-  private def backwardTimeStep(dout: INDArray,
-                               cache: FFData,
-                               isTraining: Boolean = true): (INDArray, INDArray, INDArray, INDArray, INDArray) = {
+  private def backwardTimeStep(dnextH: INDArray, dnextC: INDArray,
+                               data: FFData,
+                               isTraining: Boolean = true
+                              ): (INDArray, INDArray, INDArray, INDArray, INDArray, INDArray) = {
+
+    /**
+      * (x: INDArray, w: INDArray, wh: INDArray,  a: INDArray, i: INDArray, f: INDArray, o: INDArray,
+                            g: INDArray, prevC: INDArray, prevH: INDArray, nextC: INDArray, nextH: INDArray)
+      */
+    val h = data.prevH.size(1)
+    val dout = dnextH * tanh(data.nextC)
+    val dc = pow(tanh(data.nextC), 2).rsub(1) * dnextH*data.o + dnextC
+    val df = dc * data.nextC
+    val dprevC = dc *data.f
+    val di = data.g*dc
+    val dg = data.i * dc
+    val ai = data.a.get(NDArrayIndex.all(), NDArrayIndex.interval(0*h, 1*h))
+    val af = data.a.get(NDArrayIndex.all(), NDArrayIndex.interval(1*h, 2*h))
+    val ao = data.a.get(NDArrayIndex.all(), NDArrayIndex.interval(2*h, 3*h))
+    val ag = data.a.get(NDArrayIndex.all(), NDArrayIndex.interval(3*h, 4*h))
+    val dai = di * sigmoid(ai).rsub(1) * sigmoid(ai)
+    val daf = df * sigmoid(af).rsub(1) * sigmoid(af)
+    val dao = dout * sigmoid(ao).rsub(1) * sigmoid(ao)
+    val dag = dg * pow(tanh(ag), 2).rsub(1)
+    val da = Nd4j.hstack(dai, daf, dao, dag)
+    val dx = da.mmul(data.w.T)
+    val dprevH = da.mmul(data.wh.T)
+    val db = da.sum(0)
+    val dw = data.x.T.mmul(da)
+    val dwh = data.prevH.T.mmul(da)
+    (dx, dprevH, dprevC, dw, dwh, db)
 
 
-    /*val da = activationFn.derivative(cache.preOutput.dup()) * dout
-
-    val dx = da.dot(cache.w.T)
-    val dhidden = da.dot(cache.wh.T)
-    val dw = cache.x.T.dot(da)
-    val dwh = cache.prevH.T.dot(da)
-    val db = Nd4j.sum(da, 0)
-    (dx, dhidden, dw, dwh, db)*/
-    ???
   }
+
 
   override def toString(): String = s"number of input = ${nbInput} number of output = ${nbOutput}"
 
