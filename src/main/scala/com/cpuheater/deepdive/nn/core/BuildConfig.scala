@@ -5,6 +5,4 @@ import com.cpuheater.deepdive.nn.{LayerConfig, Optimizer}
 
 case class BuildConfig(layers: List[LayerConfig],
                        loss: LossFunction2,
-                       optimizer: Optimizer,
-                       batchSize: Int,
-                       numOfEpoch:Int = 2)
+                       optimizer: Optimizer)

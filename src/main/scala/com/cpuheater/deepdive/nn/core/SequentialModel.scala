@@ -39,7 +39,7 @@ class SequentialModel(val layers: List[Layer]) {
 
     hiddenLayers.reverse.zip(scores.tail.tail).foldLeft(dx){
       case (dprev, (layer, score)) =>
-        val GradResult(dx, g, Some(hidden), Some(context)) = layer.backward(score, dprev)
+        val GradResult(dx, g, None, None) = layer.backward(score, dprev)
         grads.putAll(g)
         dx
     }

@@ -21,8 +21,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
 
    def build(loss: LossFunction2,
              optimizerConfig: Optimizer = Optimizer.SGD(),
-             batchSize: Int,
-             seed: Option[Int] = None, numOfEpoch:Int = 2) : Solver = {
+             seed: Option[Int] = None) : Solver = {
 
      seed.foreach(Nd4j.getRandom.setSeed)
 
@@ -78,7 +77,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
 
 
      val model = new SequentialModel(newLayers)
-     val config = BuildConfig(layers, loss, optimizerConfig, batchSize, numOfEpoch = numOfEpoch)
+     val config = BuildConfig(layers, loss, optimizerConfig)
      val params = model.layers
      new Solver(model, config)
    }

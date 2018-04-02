@@ -19,8 +19,8 @@ class Solver(model: SequentialModel,
 
   private val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
 
-  def fit(dataSet: DataSet): Unit = doEpoch{
-    dataSet.batchBy(config.batchSize).zipWithIndex.foreach{
+  def fit(dataSet: DataSet, batchSize: Int, epochs:Int): Unit = doEpoch(epochs){
+    dataSet.batchBy(batchSize).zipWithIndex.foreach{
       case (batch, index) =>
         println(s"Batch ${index}")
         val x = batch.getFeatures
@@ -29,7 +29,7 @@ class Solver(model: SequentialModel,
     }
   }
 
-  def fit(iterator: DataSetIterator): Unit = doEpoch{
+  def fit(iterator: DataSetIterator, batchSize: Int, epochs:Int): Unit = doEpoch(epochs){
       var continue = iterator.hasNext
       while(continue){
         val next = iterator.next()
@@ -45,11 +45,15 @@ class Solver(model: SequentialModel,
         iterator.reset()
   }
 
-  private def doEpoch[T](f : => Unit) = {
-    for (i <- 1 to config.numOfEpoch) {
+  private def doEpoch[T](epochs: Int)(f : => Unit) = {
+    for (i <- 1 to epochs) {
       println(s"Epoch ${i}")
       f
     }
+  }
+
+  def evaluate(x: INDArray, y: INDArray) = {
+
   }
 
   def predict(x: INDArray) = {

@@ -41,11 +41,11 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.RMSProp(lr), batchSize, seed=Some(1), numOfEpoch = 10)
+      .build(loss, Optimizer.RMSProp(lr), seed=Some(1))
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
-    model.fit(new DataSet(reshapedFeatures, labels))
+    model.fit(new DataSet(reshapedFeatures, labels), batchSize, 10)
 
     val pred = model.predict(features)
     val indicies = Nd4j.argMax(pred, 1)
@@ -72,6 +72,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
 
     val loss = SoftMaxLoss
     val lr = 1e-3
+    val epochs = 10
 
     val inputSize=3*32*32
 
@@ -82,11 +83,11 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.Momentum(lr), batchSize, seed=Some(1), numOfEpoch = 10)
+      .build(loss, Optimizer.Momentum(lr), seed=Some(1))
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
-    model.fit(new DataSet(reshapedFeatures, labels))
+    model.fit(new DataSet(reshapedFeatures, labels), batchSize, epochs)
 
     val pred = model.predict(features)
     val indicies = Nd4j.argMax(pred, 1)
@@ -106,6 +107,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
     val numLabels: Int = CifarLoader.NUM_LABELS
     val numSamples: Int = 50
     val batchSize: Int = 50
+    val epochs = 10
 
 
 
@@ -129,11 +131,11 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.SGD(lr), batchSize, seed=Some(1), numOfEpoch = 10)
+      .build(loss, Optimizer.SGD(lr), seed=Some(1))
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
-    model.fit(new DataSet(reshapedFeatures, labels))
+    model.fit(new DataSet(reshapedFeatures, labels), batchSize, epochs)
 
     //println(model.params())
 
@@ -158,6 +160,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
     val numLabels: Int = CifarLoader.NUM_LABELS
     val numSamples: Int = 4
     val batchSize: Int = 4
+    val epochs = 10
 
 
 
@@ -181,10 +184,10 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.SGD(lr), batchSize, seed=Some(1), numOfEpoch = 10)
+      .build(loss, Optimizer.SGD(lr), seed=Some(1))
 
 
-    model.fit(new DataSet(features, labels))
+    model.fit(new DataSet(features, labels), batchSize, epochs)
 
     //println(model.params())
 
