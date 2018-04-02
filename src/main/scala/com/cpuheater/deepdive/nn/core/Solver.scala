@@ -5,8 +5,9 @@ import com.cpuheater.deepdive.nn.layers.ParamType
 import com.cpuheater.deepdive.optimize.BaseOptimizer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.api.ops.BaseOp
-import org.nd4j.linalg.dataset.api.DataSet
+import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator
+import org.nd4j.linalg.factory.Nd4j
 import org.nd4j.linalg.ops.transforms.Transforms._
 import org.nd4s.Implicits._
 
@@ -52,8 +53,27 @@ class Solver(model: SequentialModel,
     }
   }
 
-  def evaluate(x: INDArray, y: INDArray) = {
+  private def evaluateInner(x: INDArray, y: INDArray) : (Int, Int) = {
+    val xIdx = Nd4j.argMax(x, 1).data().asFloat()
+    val yIdx = Nd4j.argMax(y, 1).data().asFloat()
+    val correct = xIdx.zip(yIdx).filter{case (x, y) => x == y}.size
+    (correct, xIdx.size)
+  }
 
+
+  def evaluate(dataSet: DataSetIterator): Float = {
+
+   var buffer = List.empty[(Int, Int)]
+
+    while(dataSet.hasNext) {
+      val batch: DataSet = dataSet.next
+      val output = predict(batch.getFeatures)
+      val result = evaluateInner(output, batch.getLabels)
+      buffer = result :: buffer
+    }
+    val (correct, total) = buffer.unzip
+    val accuracy = correct.sum.toFloat / total.sum
+    accuracy
   }
 
   def predict(x: INDArray) = {
