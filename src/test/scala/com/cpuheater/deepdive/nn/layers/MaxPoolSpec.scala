@@ -15,8 +15,7 @@ class MaxPoolSpec extends TestSupport {
 
   it should "max pool" in {
 
-    val config = MaxPool(height = 4,
-      width = 4,
+    val config = MaxPool(
       poolHeight = 2,
       poolWidth = 2,
       stride = 2,

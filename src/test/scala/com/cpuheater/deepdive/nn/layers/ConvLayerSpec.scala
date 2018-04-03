@@ -34,7 +34,7 @@ class ConvLayerSpec extends TestSupport {
     val config = Conv2d(height = height,
       width = width,
       channels = channels,
-      nbOfFilters = nbOfFilters,
+      numFilters = nbOfFilters,
       filterHeight = filterHeight,
       filterWidth = filterWidth,
       stride = stride,

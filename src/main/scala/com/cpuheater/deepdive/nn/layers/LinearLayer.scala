@@ -13,7 +13,7 @@ import scala.collection.mutable
 
 class LinearLayer(layerConfig: Linear,
                   override val params: mutable.Map[String, INDArray],
-                  layerNb: Int) extends Layer {
+                  override val layerNb: Int) extends Layer with HasParams{
 
   private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
 

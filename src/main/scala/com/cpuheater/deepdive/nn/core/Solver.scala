@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
-import com.cpuheater.deepdive.nn.layers.ParamType
+import com.cpuheater.deepdive.nn.layers.{HasParams, ParamType}
 import com.cpuheater.deepdive.optimize.BaseOptimizer
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.api.ops.BaseOp
@@ -18,7 +18,7 @@ import scala.collection.mutable
 class Solver(model: SequentialModel,
              config: BuildConfig) extends SolverSupport {
 
-  private val optimizer = buildOptimizer(config, model.layers.flatMap(_.params).toMap)
+  private val optimizer = buildOptimizer(config, model.layers.collect{case layer :HasParams => layer.params}.flatten.toMap)
 
   def fit(dataSet: DataSet, batchSize: Int, epochs:Int): Unit = doEpoch(epochs){
     dataSet.batchBy(batchSize).zipWithIndex.foreach{
@@ -83,10 +83,11 @@ class Solver(model: SequentialModel,
   private def step(x: INDArray, y: INDArray): Unit = {
     val (loss, grads) = model.forwardAndBackwardPass(x, y)
     println(s"loss: $loss")
-    model.layers.zipWithIndex.foreach {
-      case (layer, index) =>
-        val wKey = ParamType.toString(ParamType.W, index+1)
-        val bKey = ParamType.toString(ParamType.B, index+1)
+    model.layers.filter(_.isInstanceOf[HasParams]).foreach {
+      case (layer: HasParams) =>
+        val index = layer.layerNb
+        val wKey = ParamType.toString(ParamType.W, index)
+        val bKey = ParamType.toString(ParamType.B, index)
         layer.params(wKey) -= optimizer.optimize(layer.params(wKey), grads(wKey), wKey)
         layer.params(bKey) -= optimizer.optimize(layer.params(bKey), grads(bKey), bKey)
     }
@@ -94,7 +95,7 @@ class Solver(model: SequentialModel,
   }
 
   def params(): Map[String, INDArray] = {
-    model.layers.flatMap(_.params).toMap
+    model.layers.collect{ case layer: HasParams => layer.params}.flatten.toMap
   }
 
 }

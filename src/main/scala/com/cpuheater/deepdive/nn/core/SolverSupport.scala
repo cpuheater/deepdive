@@ -20,7 +20,7 @@ trait SolverSupport {
 
 
   private def createParams(params: Map[String, INDArray]): mutable.Map[String, INDArray] = {
-    val zerosParams = params.map{ case (key, param) =>  (key -> Nd4j.zerosLike(param))}
+    val zerosParams = params.map{ case (key, param) =>  key -> Nd4j.zerosLike(param)}
     mutable.Map(zerosParams.toSeq: _*)
   }
 

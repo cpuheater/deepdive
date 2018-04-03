@@ -14,10 +14,10 @@ import org.nd4s.Implicits._
 import scala.collection.mutable
 
 class ConvLayer(config: Conv2d,
-                override val params: mutable.Map[String, INDArray], layerNb: Int) extends Layer {
+                override val params: mutable.Map[String, INDArray], override val layerNb: Int) extends Layer with HasParams {
 
 
-  require((config.width + 2 * config.padding - config.filterWidth) % config.stride == 0, "Invalid weidth")
+  require((config.width + 2 * config.padding - config.filterWidth) % config.stride == 0, "Invalid width")
   require((config.height + 2 * config.padding - config.filterHeight) % config.stride == 0, "invalid height")
 
 
@@ -46,11 +46,11 @@ class ConvLayer(config: Conv2d,
 
     val Array(batchSize, _, _, _) = x.shape()
     val weightsReshaped = params(ParamType.toString(ParamType.W, layerNb))
-      .reshape(config.nbOfFilters, config.filterWidth * config.filterWidth * config.channels) //.dot(out) + b.reshape(-1, 1)
+      .reshape(config.numFilters, config.filterWidth * config.filterWidth * config.channels) //.dot(out) + b.reshape(-1, 1)
     val x2colReshaped = x2col.permute(1,2,3, 4,5, 0).reshape(x2col.size(1) * x2col.size(2)* x2col.size(3), x2col.size(0) * x2col.size(5) * x2col.size(4))
     val bb = params(ParamType.toString(ParamType.B, layerNb)).reshape(params(ParamType.toString(ParamType.B, layerNb)).columns(), 1).broadcast(Array(params(ParamType.toString(ParamType.B, layerNb)).columns(), x2col.size(0) * x2col.size(5) * x2col.size(4)): _*)
     val preOutput = weightsReshaped.dot(x2colReshaped) + bb
-    val preOutputReshaped = preOutput.reshape(config.nbOfFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
+    val preOutputReshaped = preOutput.reshape(config.numFilters, config.outHeight, config.outWidth, batchSize).permute(3, 0, 1, 2)
 
     val out = activationFn(preOutputReshaped)
     (out, preOutputReshaped, x2colReshaped)
@@ -69,7 +69,7 @@ class ConvLayer(config: Conv2d,
 
     val db = da.sum(0, 2, 3)
     val daReshaped = da.permute(1,2,3,0)
-      .reshape(config.nbOfFilters, dout.size(0) * dout.size(2) * dout.size(3))
+      .reshape(config.numFilters, dout.size(0) * dout.size(2) * dout.size(3))
 
     val dw = daReshaped.dot(x2cols.T).reshape(w.shape(): _*)
 

@@ -6,7 +6,7 @@ import com.cpuheater.deepdive.activations.{ActivationFn, Identity}
 case class Conv2d(height:Int,
                   width: Int,
                   channels: Int,
-                  nbOfFilters: Int,
+                  numFilters: Int,
                   filterHeight: Int,
                   filterWidth: Int,
                   stride: Int,

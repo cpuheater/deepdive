@@ -16,10 +16,7 @@ import org.nd4s.Implicits._
 import scala.collection.mutable
 
 class MaxPoolLayer(config: MaxPool,
-                   layerNb: Int) extends Layer {
-
-
-  def params: mutable.Map[String, INDArray] = throw new UnsupportedOperationException()
+                   override val layerNb: Int) extends Layer {
 
   private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
 
@@ -30,29 +27,37 @@ class MaxPoolLayer(config: MaxPool,
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
     val Array(n, c, h, w) = x.shape()
 
-    val output = Nd4j.createUninitialized(n * c * config.outHeight * config.outWidth)
+
+    val outHeight = 1 + (h - config.poolHeight) / config.stride
+    val outWidth = 1 + (w - config.poolWidth) / config.stride
+
+
+    val output = Nd4j.createUninitialized(n * c * outHeight * outWidth)
 
     Convolution.pooling2D(x,
       config.poolHeight,
       config.poolWidth,
       config.stride, config.stride, 0, 0, true,
-      Pooling2D.Pooling2DType.MAX, 0.0, config.outHeight, config.outWidth, output)
+      Pooling2D.Pooling2DType.MAX, 0.0, outHeight, outWidth, output)
 
-    val outputReshaped = output.reshape(n, c, config.outHeight, config.outWidth)
+    val outputReshaped = output.reshape(n, c, outHeight, outWidth)
 
     cache(ParamType.toString(ParamType.X, layerNb)) = x
 
-    output
+    outputReshaped
   }
 
   override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
     val x = cache(ParamType.toString(ParamType.X, layerNb))
-    val Array(batchSize, channels, _, _) = x.shape()
+    val Array(batchSize, channels, h, w) = x.shape()
+
+    val outHeight = 1 + (h - config.poolHeight) / config.stride
+    val outWidth = 1 + (w - config.poolWidth) / config.stride
 
     val col6d = Nd4j.create(Array(batchSize,
       channels,
-      config.outHeight,
-      config.outWidth,
+      outHeight,
+      outWidth,
       config.poolHeight,
       config.poolWidth), 'c')
 
@@ -60,14 +65,14 @@ class MaxPoolLayer(config: MaxPool,
 
     val dout1d = dout.reshape('c', dout.length, 1)
 
-    val col2d = col6d.reshape('c', batchSize*channels * config.outHeight * config.outWidth, config.poolHeight* config.poolWidth)
+    val col2d = col6d.reshape('c', batchSize*channels * outHeight * outWidth, config.poolHeight* config.poolWidth)
     Convolution.im2col(x, config.poolHeight, config.poolWidth, config.stride, config.stride, 0, 0, true, col6dPermuted)
     val isMax = Nd4j.getExecutioner.execAndReturn(new IsMax(col2d, 1))
     isMax.muliColumnVector(dout1d)
 
-    val tempEpsilon = Nd4j.create(Array[Int](channels, batchSize, config.height, config.width), 'c')
+    val tempEpsilon = Nd4j.create(Array[Int](channels, batchSize, h, w), 'c')
     val outEpsilon = tempEpsilon.permute(1, 0, 2, 3)
-    Convolution.col2im(col6dPermuted, outEpsilon, config.stride, config.stride, 0, 0, config.height, config.width)
+    Convolution.col2im(col6dPermuted, outEpsilon, config.stride, config.stride, 0, 0, h, w)
     GradResult(outEpsilon)
   }
 

@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.lossfunctions.{LossFunction, LossFunction2, SoftMaxLoss}
-import com.cpuheater.deepdive.nn.layers.{GradResult, Layer, LinearLayer, ParamType}
+import com.cpuheater.deepdive.nn.layers._
 
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
@@ -39,9 +39,15 @@ class SequentialModel(val layers: List[Layer]) {
 
     hiddenLayers.reverse.zip(scores.tail.tail).foldLeft(dx){
       case (dprev, (layer, score)) =>
-        val GradResult(dx, g, None, None) = layer.backward(score, dprev)
-        grads.putAll(g)
-        dx
+        if(layer.isInstanceOf[HasParams]) {
+          val GradResult(dx, g, None, None) = layer.backward(score, dprev)
+          grads.putAll(g)
+          dx
+        }
+        else {
+          val GradResult(dx, g, None, None) = layer.backward(score, dprev)
+          dx
+        }
     }
     (loss, grads.toMap)
   }

@@ -13,8 +13,7 @@ import org.nd4s.Implicits._
 
 import scala.collection.mutable
 
-class DropoutLayer(config: Dropout,
-                  layerNb: Int) extends Layer {
+class DropoutLayer(config: Dropout, override val layerNb: Int) extends Layer {
 
   private var mask: INDArray = _
 

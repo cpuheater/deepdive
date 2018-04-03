@@ -40,15 +40,19 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
 
          val w = WeightsInitializer.initWeights(
            WeightsInitType.NORMAL,
-           Array(convConfig.nbOfFilters,
+           Array(convConfig.numFilters,
              convConfig.channels,
              convConfig.filterHeight,
              convConfig.filterWidth))
-         val b = Nd4j.zeros(convConfig.nbOfFilters)
+         val b = Nd4j.zeros(convConfig.numFilters)
          val params = mutable.Map[String, INDArray](ParamType.toString(ParamType.W, index) -> w,
            ParamType.toString(ParamType.B, index) -> b)
 
          new ConvLayer(convConfig, params, index)
+
+       case (maxPoolConfig: MaxPool, index) =>
+         
+         new MaxPoolLayer(maxPoolConfig, index)
 
        case (dropoutConfig: Dropout, index) =>
          new DropoutLayer(dropoutConfig, index)

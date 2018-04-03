@@ -15,6 +15,13 @@ trait Layer {
 
   def backward(x: INDArray, dout: INDArray, isTraining: Boolean=true): GradResult
 
+  def layerNb: Int
+
+}
+
+
+trait HasParams {
+
   def params: mutable.Map[String, INDArray]
 
 }
