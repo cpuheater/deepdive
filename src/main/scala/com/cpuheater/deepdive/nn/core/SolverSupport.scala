@@ -1,7 +1,7 @@
 package com.cpuheater.deepdive.nn.core
 
 import com.cpuheater.deepdive.nn.Optimizer
-import com.cpuheater.deepdive.optimize.{BaseOptimizer, Momentum, RMSProp, SGD}
+import com.cpuheater.deepdive.optimize.{BaseOptimizer, Momentum, RMSProp, SGD, Adam}
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.factory.Nd4j
 
@@ -16,6 +16,8 @@ trait SolverSupport {
       new Momentum(config, createParams(Map(params.toSeq: _*)))
     case config: Optimizer.RMSProp =>
       new RMSProp(config, createParams(Map(params.toSeq: _*)))
+    case config: Optimizer.Adam =>
+      new Adam(config, createParams(Map(params.toSeq: _*)))
   }
 
 

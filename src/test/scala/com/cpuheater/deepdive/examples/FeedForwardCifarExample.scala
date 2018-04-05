@@ -33,7 +33,6 @@ class FeedForwardCifarExample extends TestSupport{
 
     val cifarTrain: DataSetIterator = new CifarDataSetIterator(batchSize, 50, Array[Int](height, width, channels), false, true)
     val e = cifarTrain.totalExamples
-    //val l = cifar.next.getLabels
     val cifarTest: DataSetIterator = new CifarDataSetIterator(batchSize, 100, Array[Int](height, width, channels), false, false)
 
 
@@ -58,7 +57,7 @@ class FeedForwardCifarExample extends TestSupport{
         name = ""))
       .add(Linear(8192, 100))
       .add(Linear(100, numClasses))
-      .build(loss, Optimizer.RMSProp(1e-3), seed=Some(1))
+      .build(loss, Optimizer.Adam(1e-3), seed=Some(1))
 
     model.fit(cifarTrain, batchSize, epochs)
     println(model.evaluate(cifarTest))

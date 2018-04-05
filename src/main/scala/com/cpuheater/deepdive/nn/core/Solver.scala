@@ -62,7 +62,6 @@ class Solver(model: SequentialModel,
 
 
   def evaluate(dataSet: DataSetIterator): Float = {
-
    var buffer = List.empty[(Int, Int)]
 
     while(dataSet.hasNext) {

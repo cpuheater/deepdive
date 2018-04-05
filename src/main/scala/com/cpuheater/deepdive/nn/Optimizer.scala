@@ -17,6 +17,10 @@ object Optimizer {
                      decay: Double =0.99,
                      eps: Double = 1e-8) extends Optimizer
 
+  case class Adam(override val lr: Double = 0.01,
+                     beta1: Double =0.9, beta2: Double= 0.999,
+                     eps: Double = 1e-8) extends Optimizer
+
 }
 
 
