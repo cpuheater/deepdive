@@ -1,7 +1,6 @@
 package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.nn.Optimizer.Adam
-import com.cpuheater.deepdive.nn.core.{OldMultiLayerNetwork, OldSolver}
 import com.cpuheater.deepdive.util.TestSupport
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.dataset.DataSet

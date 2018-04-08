@@ -21,9 +21,6 @@ class ConvLayer(config: Conv2d,
   require((config.height + 2 * config.padding - config.filterHeight) % config.stride == 0, "invalid height")
 
 
-  private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
-
-
   override def name: String = config.name
 
   override def activationFn: ActivationFn = config.activation

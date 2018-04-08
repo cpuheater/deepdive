@@ -18,19 +18,20 @@ import scala.collection.mutable
 class MaxPoolLayer(config: MaxPool,
                    override val layerNb: Int) extends Layer {
 
-  private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
-
   override def name: String = config.name
 
   override def activationFn: ActivationFn = throw new UnsupportedOperationException()
 
   override def forward(x: INDArray, isTraining: Boolean =  true): INDArray = {
-    val Array(n, c, h, w) = x.shape()
+    val (out, preOutput)= innerForward(x, isTraining)
+    out
+  }
 
+  private def innerForward(x: INDArray, isTraining: Boolean =  true): (INDArray, INDArray) = {
+    val Array(n, c, h, w) = x.shape()
 
     val outHeight = 1 + (h - config.poolHeight) / config.stride
     val outWidth = 1 + (w - config.poolWidth) / config.stride
-
 
     val output = Nd4j.createUninitialized(n * c * outHeight * outWidth)
 
@@ -42,14 +43,12 @@ class MaxPoolLayer(config: MaxPool,
 
     val outputReshaped = output.reshape(n, c, outHeight, outWidth)
 
-    cache(ParamType.toString(ParamType.X, layerNb)) = x
-
-    outputReshaped
+    (outputReshaped, x)
   }
 
   override def backward(x: INDArray, dout: INDArray, isTraining: Boolean = true): GradResult = {
-    val x = cache(ParamType.toString(ParamType.X, layerNb))
-    val Array(batchSize, channels, h, w) = x.shape()
+    val (out, preOutput) = innerForward(x, isTraining)
+    val Array(batchSize, channels, h, w) = preOutput.shape()
 
     val outHeight = 1 + (h - config.poolHeight) / config.stride
     val outWidth = 1 + (w - config.poolWidth) / config.stride
@@ -66,7 +65,7 @@ class MaxPoolLayer(config: MaxPool,
     val dout1d = dout.reshape('c', dout.length, 1)
 
     val col2d = col6d.reshape('c', batchSize*channels * outHeight * outWidth, config.poolHeight* config.poolWidth)
-    Convolution.im2col(x, config.poolHeight, config.poolWidth, config.stride, config.stride, 0, 0, true, col6dPermuted)
+    Convolution.im2col(preOutput, config.poolHeight, config.poolWidth, config.stride, config.stride, 0, 0, true, col6dPermuted)
     val isMax = Nd4j.getExecutioner.execAndReturn(new IsMax(col2d, 1))
     isMax.muliColumnVector(dout1d)
 

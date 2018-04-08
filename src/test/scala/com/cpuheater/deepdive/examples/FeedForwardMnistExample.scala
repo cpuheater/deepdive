@@ -13,7 +13,7 @@ import org.nd4j.linalg.util.ArrayUtil
 
 class FeedForwardMnistExample extends TestSupport{
 
-  it should "cross entropy 0.9838" in {
+  it should "Accuracy 0.9659" in {
 
 
     val numRows = 28

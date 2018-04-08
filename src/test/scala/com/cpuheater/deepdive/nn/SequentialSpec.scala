@@ -3,7 +3,6 @@ package com.cpuheater.deepdive.nn
 import com.cpuheater.deepdive.activations.{Identity, ReLU}
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
 import com.cpuheater.deepdive.nn.Optimizer.SGD
-import com.cpuheater.deepdive.nn.core.{OldMultiLayerNetwork, OldSolver}
 import com.cpuheater.deepdive.nn.layers.ParamType
 import com.cpuheater.deepdive.util.TestSupport
 import org.nd4j.linalg.api.ndarray.INDArray
