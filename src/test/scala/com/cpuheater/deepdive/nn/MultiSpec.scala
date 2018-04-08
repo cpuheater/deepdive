@@ -19,8 +19,7 @@ class MultiSpec extends TestSupport {
     val output = 10
 
     val nbOfEpoch = 30
-
-    //val (features, labels) = readFromFile
+    val (features1, labels1) = readFromFile
     //val nbOfExamples = features.rows()
 
 

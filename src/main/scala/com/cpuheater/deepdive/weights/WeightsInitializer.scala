@@ -10,7 +10,7 @@ import org.nd4s.Implicits._
 object WeightsInitializer {
 
 
-   def initWeights(`type`: WeightsInitType, shape: Array[Int], scale: Double = 0.1): INDArray = {
+   def initWeights(`type`: WeightsInitType, shape: Array[Int], scale: Double = 0.01): INDArray = {
        `type` match {
            case WeightsInitType.NORMAL  =>
              Nd4j.randn(shape) * scale

@@ -27,17 +27,19 @@ class FeedForwardCifarExample extends TestSupport{
     val numClasses = 10
 
     val batchSize = 128
-    val rngSeed = 123
     val epochs = 5
 
 
-    val cifarTrain: DataSetIterator = new CifarDataSetIterator(batchSize, 50, Array[Int](height, width, channels), false, true)
-    val e = cifarTrain.totalExamples
-    val cifarTest: DataSetIterator = new CifarDataSetIterator(batchSize, 100, Array[Int](height, width, channels), false, false)
+    //val cifarTrain: DataSetIterator = new CifarDataSetIterator(batchSize, 50, Array[Int](height, width, channels), false, true)
+    //val e = cifarTrain.totalExamples
+    //val cifarTest: DataSetIterator = new CifarDataSetIterator(batchSize, 100, Array[Int](height, width, channels), false, false)
+
+    val (features, labels) = readFromFile
+    val reshapedFeatures = features.reshape(Array(features.size(0), 3, 32, 32):_*)
 
 
     val loss = SoftMaxLoss
-    val lr = 3e-3
+    val lr = 1e-3
 
     val model = Sequential()
       .add(Conv2d(height = height,
@@ -55,14 +57,36 @@ class FeedForwardCifarExample extends TestSupport{
         poolWidth = 2,
         stride = 2,
         name = ""))
-      .add(Linear(8192, 100))
+      .add(Linear(8192, 100, ReLU))
       .add(Linear(100, numClasses))
-      .build(loss, Optimizer.Adam(1e-3), seed=Some(1))
+      .build(loss, Optimizer.Adam(lr=0.001), seed=Some(1))
 
+    val cifarTrain = new DataSet(reshapedFeatures, labels)
     model.fit(cifarTrain, batchSize, epochs)
-    println(model.evaluate(cifarTest))
+    println(model.evaluate(cifarTrain, 50))
+
+  }
 
 
+
+  def readFromFile: (INDArray, INDArray) = {
+
+    val oneHotMap = Nd4j.eye(10)
+    val lines = io.Source.fromInputStream(getClass.getResourceAsStream("/cifar50.csv")).getLines()
+
+    val (features, labelsArray) = lines.map { x =>
+      val value = x.split(",")
+      val features = value.reverse.tail
+      val label = value.takeRight(1)
+      (features.map(_.toFloat), label.map(_.toFloat))
+    }.toArray.foldLeft((Array.empty[Array[Float]], Array.empty[Array[Float]])){
+      case ((features, labels), (f, l)) =>
+        (features :+ f, labels :+ l)
+    }
+
+    val labels = Nd4j.create(features.length, 10)
+    val labelsNDarray = labelsArray.flatten.zipWithIndex.foreach{ case (value, index) => labels.putRow(index, oneHotMap.getRow(value.toInt))}
+    (Nd4j.create(features), labels)
   }
 
 }

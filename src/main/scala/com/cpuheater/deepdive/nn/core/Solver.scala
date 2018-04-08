@@ -3,6 +3,8 @@ package com.cpuheater.deepdive.nn.core
 import com.cpuheater.deepdive.lossfunctions.SoftMaxLoss
 import com.cpuheater.deepdive.nn.layers.{HasParams, ParamType}
 import com.cpuheater.deepdive.optimize.BaseOptimizer
+import org.deeplearning4j.datasets.iterator.IteratorDataSetIterator
+import org.junit.Assert.assertEquals
 import org.nd4j.linalg.api.ndarray.INDArray
 import org.nd4j.linalg.api.ops.BaseOp
 import org.nd4j.linalg.dataset.DataSet
@@ -61,8 +63,16 @@ class Solver(model: SequentialModel,
   }
 
 
+  def evaluate(dataSet: DataSet, batchSize: Int): Float = {
+    val arrayList = new java.util.ArrayList[DataSet]()
+    arrayList.add(dataSet)
+    val iter = new IteratorDataSetIterator(arrayList.iterator, batchSize)
+    evaluate(iter)
+  }
+
+
   def evaluate(dataSet: DataSetIterator): Float = {
-   var buffer = List.empty[(Int, Int)]
+    var buffer = List.empty[(Int, Int)]
 
     while(dataSet.hasNext) {
       val batch: DataSet = dataSet.next
