@@ -29,7 +29,7 @@ class SequentialSpec extends TestSupport{
       .add(Linear(3, 3, activation = ReLU))
         .add(Linear(3, 3, activation = ReLU))
           .add(Linear(3, 10))
-      .build(loss, Optimizer.SGD(1e-3), seed=Some(1))
+      .compile(loss, Optimizer.SGD(1e-3), seed=Some(1))
 
     model.fit(dataSet, batchSize, epochs)
 

@@ -41,7 +41,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.RMSProp(lr), seed=Some(1))
+      .compile(loss, Optimizer.RMSProp(lr), seed=Some(1))
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
@@ -83,7 +83,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.Momentum(lr), seed=Some(1))
+      .compile(loss, Optimizer.Momentum(lr), seed=Some(1))
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
@@ -131,7 +131,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.SGD(lr), seed=Some(1))
+      .compile(loss, Optimizer.SGD(lr), seed=Some(1))
 
     val reshapedFeatures = features.reshape(batchSize, 3, 32, 32)
 
@@ -184,7 +184,7 @@ class FullyConnectedCIFARSpec extends TestSupport{
       .add(Linear(inputSize, hiddenSize , activation = ReLU))
       .add(Linear(hiddenSize, hiddenSize, activation = ReLU))
       .add(Linear(hiddenSize, numLabels))
-      .build(loss, Optimizer.SGD(lr), seed=Some(1))
+      .compile(loss, Optimizer.SGD(lr), seed=Some(1))
 
 
     model.fit(new DataSet(features, labels), batchSize, epochs)

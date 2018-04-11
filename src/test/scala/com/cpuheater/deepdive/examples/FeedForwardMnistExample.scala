@@ -33,7 +33,7 @@ class FeedForwardMnistExample extends TestSupport{
       .add(Linear(numRows*numColumns, 1000, activation = ReLU))
       .add(Linear(1000, 1000, activation = ReLU))
       .add(Linear(1000, outputNum))
-      .build(loss, Optimizer.RMSProp(1e-3), seed=Some(1))
+      .compile(loss, Optimizer.RMSProp(1e-3), seed=Some(1))
 
     model.fit(mnistTrain, batchSize, epochs)
     println(model.evaluate(mnistTest))

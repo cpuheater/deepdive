@@ -3,7 +3,8 @@ package com.cpuheater.deepdive.nn
 
 import com.cpuheater.deepdive.lossfunctions.LossFunction2
 import com.cpuheater.deepdive.nn.layers._
-import com.cpuheater.deepdive.nn.core.{BuildConfig, SequentialModel, Solver, SolverSupport}
+import com.cpuheater.deepdive.nn.core._
+import com.cpuheater.deepdive.nn.serialize.ModelSerializer
 import com.cpuheater.deepdive.weights.WeightsInitializer
 
 import scala.collection.JavaConverters._
@@ -15,13 +16,13 @@ import org.nd4s.Implicits._
 
 import scala.collection.mutable
 
-class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSupport {
+class Sequential protected (layers: List[LayerConfig] = Nil)  {
 
    def add(layer: LayerConfig)  = new Sequential(layers:+layer)
 
-   def build(loss: LossFunction2,
-             optimizerConfig: Optimizer = Optimizer.SGD(),
-             seed: Option[Int] = None) : Solver = {
+   def compile(loss: LossFunction2,
+               optimizerConfig: Optimizer = Optimizer.SGD(),
+               seed: Option[Int] = None) : Solver = {
 
      seed.foreach(Nd4j.getRandom.setSeed)
 
@@ -81,7 +82,7 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
 
 
      val model = new SequentialModel(newLayers)
-     val config = BuildConfig(layers, loss, optimizerConfig)
+     val config = ModelConfig(layers, loss, optimizerConfig)
      val params = model.layers
      new Solver(model, config)
    }
@@ -92,8 +93,17 @@ class Sequential protected (layers: List[LayerConfig] = Nil) extends SolverSuppo
 
 object Sequential {
 
+
   def apply() : Sequential = {
     new Sequential()
+  }
+
+  def save(model: Model, file: String) = {
+   ModelSerializer.save(model, file)
+  }
+
+  def load(file: String) = {
+    ModelSerializer.load(file)
   }
 
 }

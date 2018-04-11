@@ -18,7 +18,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 
 class Solver(model: SequentialModel,
-             config: BuildConfig) extends SolverSupport {
+             override val config: ModelConfig) extends Model with SolverSupport {
 
   private val optimizer = buildOptimizer(config, model.layers.collect{case layer :HasParams => layer.params}.flatten.toMap)
 
@@ -103,7 +103,7 @@ class Solver(model: SequentialModel,
 
   }
 
-  def params(): Map[String, INDArray] = {
+  override def params(): Map[String, INDArray] = {
     model.layers.collect{ case layer: HasParams => layer.params}.flatten.toMap
   }
 

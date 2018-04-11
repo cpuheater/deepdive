@@ -59,7 +59,7 @@ class FeedForwardCifarExample extends TestSupport{
         name = ""))
       .add(Linear(8192, 100, ReLU))
       .add(Linear(100, numClasses))
-      .build(loss, Optimizer.Adam(lr=0.001), seed=Some(1))
+      .compile(loss, Optimizer.Adam(lr=0.001), seed=Some(1))
 
     val cifarTrain = new DataSet(reshapedFeatures, labels)
     model.fit(cifarTrain, batchSize, epochs)
