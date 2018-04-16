@@ -30,7 +30,7 @@ object MSELoss extends LossFunction{
   }
 
   def computeGradient(label: INDArray, output: INDArray, activationFn: ActivationFn): INDArray =  {
-    var diff = (output-label) * activationFn.derivative(output)
+    val diff = (output-label) * activationFn.derivative(output)
     diff
   }
 

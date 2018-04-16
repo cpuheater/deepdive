@@ -23,21 +23,6 @@ import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
 
 
-
-/*
-shifted_logits = x - np.max(x, axis=1, keepdims=True)
-    Z = np.sum(np.exp(shifted_logits), axis=1, keepdims=True)
-    log_probs = shifted_logits - np.log(Z)
-    probs = np.exp(log_probs)
-    N = x.shape[0]
-    loss = -np.sum(log_probs[np.arange(N), y]) / N
-    dx = probs.copy()
-    dx[np.arange(N), y] -= 1
-    dx /= N
-    return loss, dx
- */
-
-
 object SoftMaxLoss  extends LossFunction2 {
 
 
@@ -67,12 +52,6 @@ object SoftMaxLoss  extends LossFunction2 {
     val loss = -(log(probs)*labels).sumNumber().doubleValue()/nbTrainigExamples
     val grad = (probs - labels)/nbTrainigExamples
     (loss, grad)
-
-
-    /// ulalala
-
-    //val activ = Nd4j.getExecutioner.execAndReturn(new SoftMax(outputs))
-    //val grad2 = activ.subi(labels)
 
   }
 
