@@ -17,9 +17,6 @@ class RNNLayer(layerConfig: RNN,
                   override val params: mutable.Map[String, INDArray],
                   override val layerNb: Int) extends Layer  with HasParams{
 
-  private val cache: mutable.Map[String, INDArray] = mutable.Map[String, INDArray]()
-  private val cacheTS: mutable.ListBuffer[Map[String, INDArray]] = new ListBuffer[Map[String, INDArray]]()
-
   private case class FFData(x: INDArray, out: INDArray, preOutput: INDArray, prevHidden: INDArray, w: INDArray, wh: INDArray)
 
   override def name: String = layerConfig.name
