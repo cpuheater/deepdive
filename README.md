@@ -1,6 +1,6 @@
 # deepdive 
 
-deepdive - is a deep learning library implemented in Scala, it uses ND4j for linear algebra and signal processing. 
+deepdive - is a deep learning library implemented in Scala, it uses ND4j for linear algebra. 
 
 
 
